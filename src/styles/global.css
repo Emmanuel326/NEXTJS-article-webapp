@@ -1,0 +1,105 @@
+/* ====== Global Variables & Reset ====== */
+:root {
+  --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --background-color: #f9f9f9;
+  --text-color: #000000;
+  --primary-color: #007bff;
+  --max-width: 1200px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ====== Base Styles - Mobile First ====== */
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ====== Global Container ====== */
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ====== Featured Blogs Wrapper ====== */
+.featured-blogs {
+  width: 100%;
+  background: transparent;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* ====== Blogs Container: Flexible Grid (auto-fit) ====== */
+.blogs-container {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* ====== Tablet and Larger Screens ====== */
+@media (min-width: 768px) {
+  .blogs-container {
+    gap: 24px;
+  }
+}
+
+/* ====== Global Dark Mode Overrides ====== */
+body.dark-mode {
+  --background-color: #222222;
+  --text-color: #ffffff;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+body.dark-mode a {
+  color: inherit;
+}
+
+/* ====== Blog Cards Grid Container ====== */
+.blog-cards-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Always 2 columns */
+  gap: 16px;                         
+  margin: 16px auto;
+  max-width: var(--max-width);
+}
+
+/* ====== Pagination Controls ====== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border: none;
+  background-color: var(--primary-color);
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

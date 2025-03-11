@@ -1,0 +1,100 @@
+/* Base Section Styling */
+.section {
+  padding: 20px;
+}
+
+/* Container for the Contact Page */
+.contactContainer {
+  max-width: 600px;
+  margin: 80px auto;
+  padding: 20px;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Typography */
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+  color: #555;
+}
+
+/* Contact Form Styling */
+.contactForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.label {
+  font-weight: bold;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+/* Button Styling */
+.button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #218838;
+}
+
+/* Success and Error Messages */
+.successMsg {
+  color: green;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+}
+
+/* Contact Details Styling */
+.contactDetails {
+  margin-top: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .contactContainer {
+    margin: 40px auto;
+    padding: 15px;
+  }
+  .title {
+    font-size: 1.5rem;
+  }
+  .subtitle {
+    font-size: 1rem;
+  }
+}

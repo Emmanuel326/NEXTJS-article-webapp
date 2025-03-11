@@ -1,0 +1,368 @@
+/* Updated Navbar Styles - Investopedia-Inspired (with mobile adjustments) */
+
+/* General Navbar Styling */
+.navbar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 20px;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbarLight {
+  background-color: #1c8391;
+  color: #fff;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  --navbar-bg: #1f848f;
+}
+
+.navbarDark {
+  background-color: #222;
+  color: #fff;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  --navbar-bg: #222;
+}
+
+/* Navbar Brand */
+.navbarBrand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 10px;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: inherit;
+}
+
+/* Dark Mode Toggle & Hamburger */
+.darkModeToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: inherit;
+}
+
+/* Hamburger Menu for Mobile - Smaller Dimensions */
+.navbarBurger {
+  display: flex;
+  background: none;
+  border: none;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 25px;
+  width: 30px;
+  cursor: pointer;
+  z-index: 9999;
+  position: relative;
+  flex-shrink: 0;
+  min-width: 30px;
+}
+
+.navbarBurger span {
+  display: block;
+  height: 3px;
+  background-color: #fff;
+  width: 100%;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.navbarBurgerActive span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.navbarBurgerActive span:nth-child(2) {
+  opacity: 0;
+}
+.navbarBurgerActive span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Mobile Menu Dropdown */
+.navbarMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 0;
+  gap: 10px;
+  background-color: inherit;
+  transition: all 0.3s ease-in-out;
+}
+
+.navbarMenuActive {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Navbar Items */
+.navbarItem {
+  color: inherit;
+  text-decoration: none;
+  padding: 12px 15px;
+  width: 100%;
+  text-align: center;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.navbarItem:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Navbar Search (Mobile) */
+.navbarSearch {
+  width: 100%;
+  padding: 0 15px;
+}
+
+/* Dropdown for Categories */
+.hasDropdown {
+  position: relative;
+  width: 100%;
+}
+
+/* Category Toggle Button */
+.dropdownToggle {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: inherit;
+  padding: 12px 15px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.dropdownToggle:hover {
+  color: #ffcc00;
+}
+
+/* Mobile: Subcategory dropdowns use static positioning (push content below) */
+.dropdownMenu {
+  position: static;
+  min-width: 100%;
+  border-radius: 4px;
+  box-shadow: none;
+  opacity: 1;
+  transform: none;
+  transition: none;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  z-index: 1200;
+  background-color: var(--navbar-bg);
+  padding: 10px 0;
+  margin-top: 5px;
+}
+
+/* Desktop Overrides */
+@media (min-width: 768px) {
+  .navbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+  }
+  
+  /* Extra margin to separate navbarBrand from links */
+  .navbarBrand {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .navbarBurger {
+    display: none;
+  }
+
+  .navbarMenu {
+    position: static;
+    display: flex !important;
+    flex-direction: row;
+    width: auto;
+    align-items: center;
+    padding: 0;
+  }
+
+  .navbarItem {
+    width: auto;
+    text-align: left;
+    padding: 12px 20px;
+  }
+
+  .hasDropdown {
+    width: auto;
+  }
+
+  /* On desktop, dropdown menus are absolutely positioned */
+  .dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 220px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    padding: 10px 0;
+    margin-top: 0;
+    background-color: var(--navbar-bg);
+  }
+
+  .dropdownMenuActive {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+/* Dropdown Items */
+.dropdownItem {
+  background: none;
+  border: none;
+  color: inherit;
+  text-decoration: none;
+  padding: 10px 15px;
+  text-align: left;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.dropdownItem:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Desktop Search: When not active, show only the search icon */
+.desktopSearch {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 0 15px;
+  position: relative;
+}
+
+.searchToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: inherit;
+  padding: 8px;
+  transition: color 0.3s ease;
+}
+
+.searchToggle:hover {
+  color: var(--primary-color);
+}
+
+/* Desktop Search Overlay that replaces the navbar items */
+.desktopSearchOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background-color: var(--navbar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 0 20px;
+}
+
+.desktopSearchForm {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  align-items: center;
+}
+
+.desktopSearchForm input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.desktopSearchForm button {
+  padding: 10px 16px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+/* Cancel button styling */
+.cancelButton {
+  background: #ccc;
+  color: #000;
+}
+
+.cancelButton:hover {
+  background: #bbb;
+}
+
+/* Search submit button styling */
+.searchSubmitButton {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+.searchSubmitButton:hover {
+  background: #0069d9;
+}
+
+/* Fallback Search Form in Navbar (if used) */
+.navbarEnd {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchContainer {
+  position: relative;
+  width: 90%;
+  max-width: 300px;
+}
+
+@media (min-width: 768px) {
+  .searchContainer {
+    max-width: 400px;
+  }
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  font-size: 1rem;
+}
