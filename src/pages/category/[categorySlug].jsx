@@ -8,13 +8,14 @@ import Head from "next/head";
 import styles from "../../styles/category.module.css";
 
 const Category = () => {
+  // Updated: Use categorySlug from params (dynamic route file is [categorySlug].jsx)
   const params = useParams();
-  const slugOrId = params?.id || "";
+  const slugOrId = params?.categorySlug || "";
 
   // Determine if the parameter is numeric
   const isNumeric = !isNaN(Number(slugOrId));
 
-  // If not numeric, fetch all categories to map the slug to its numeric ID
+  // If not numeric, fetch categories to map the slug to its numeric ID
   const {
     data: categories,
     isLoading: catLoading,

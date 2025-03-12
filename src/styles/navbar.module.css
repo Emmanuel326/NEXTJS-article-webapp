@@ -1,4 +1,4 @@
-/* Updated Navbar Styles - Investopedia-Inspired (with mobile adjustments) */
+/* Navbar.module.css */
 
 /* General Navbar Styling */
 .navbar {
@@ -14,20 +14,18 @@
   z-index: 1000;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #222; /* dark mode default */
+  color: #fff;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  --navbar-bg: #222;
 }
 
+/* Light mode styles kept for toggle if needed */
 .navbarLight {
   background-color: #1c8391;
   color: #fff;
   border-bottom: 2px solid rgba(255, 255, 255, 0.3);
   --navbar-bg: #1f848f;
-}
-
-.navbarDark {
-  background-color: #222;
-  color: #fff;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-  --navbar-bg: #222;
 }
 
 /* Navbar Brand */
@@ -54,7 +52,7 @@
   color: inherit;
 }
 
-/* Hamburger Menu for Mobile - Smaller Dimensions */
+/* Hamburger Menu for Mobile */
 .navbarBurger {
   display: flex;
   background: none;
@@ -159,7 +157,7 @@
   color: #ffcc00;
 }
 
-/* Mobile: Subcategory dropdowns use static positioning (push content below) */
+/* Mobile: Subcategory dropdowns */
 .dropdownMenu {
   position: static;
   min-width: 100%;
@@ -186,7 +184,6 @@
     padding: 15px 30px;
   }
   
-  /* Extra margin to separate navbarBrand from links */
   .navbarBrand {
     width: 100%;
     margin-bottom: 20px;
@@ -215,7 +212,7 @@
     width: auto;
   }
 
-  /* On desktop, dropdown menus are absolutely positioned */
+  /* Desktop dropdowns */
   .dropdownMenu {
     position: absolute;
     top: 100%;
@@ -255,7 +252,7 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Desktop Search: When not active, show only the search icon */
+/* Desktop Search */
 .desktopSearch {
   display: flex;
   align-items: center;
@@ -278,7 +275,7 @@
   color: var(--primary-color);
 }
 
-/* Desktop Search Overlay that replaces the navbar items */
+/* Desktop Search Overlay */
 .desktopSearchOverlay {
   position: absolute;
   top: 0;
@@ -318,7 +315,7 @@
   transition: background 0.3s ease;
 }
 
-/* Cancel button styling */
+/* Cancel button */
 .cancelButton {
   background: #ccc;
   color: #000;
@@ -328,7 +325,7 @@
   background: #bbb;
 }
 
-/* Search submit button styling */
+/* Search submit button */
 .searchSubmitButton {
   background: var(--primary-color);
   color: #fff;
@@ -338,7 +335,7 @@
   background: #0069d9;
 }
 
-/* Fallback Search Form in Navbar (if used) */
+/* Fallback Search Form */
 .navbarEnd {
   width: 100%;
   display: flex;

@@ -1,15 +1,29 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { useQuery } from "@tanstack/react-query";
-import { fetchBlogBySlug } from "../../../services/api"; // Adjust path as needed
+import { fetchBlogBySlug } from "../../../services/api";
 import SEO from "../../../components/Seo";
 import Head from "next/head";
 import styles from "../../../styles/BlogDetails.module.css";
 
 const BlogDetails = () => {
   const router = useRouter();
-  const { categorySlug, blogSlug } = router.query;
+
+  // Wait until the router is ready before proceeding
+  if (!router.isReady) {
+    return <p>Loading...</p>;
+  }
+
+  // Use a safe fallback for router.query
+  const query = router.query || {};
+  const categorySlug = query.categorySlug;
+  const blogSlug = query.blogSlug;
+
+  // If required parameters are not present yet, show loading state
+  if (!categorySlug || !blogSlug) {
+    return <p>Loading...</p>;
+  }
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["blog", blogSlug],

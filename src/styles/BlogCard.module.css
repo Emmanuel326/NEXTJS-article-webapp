@@ -84,3 +84,26 @@
     font-size: 0.85rem;
   }
 }
+
+/* Dark Mode Overrides */
+/* These rules apply when the <body> has a class of "dark-mode" */
+:global(body.dark-mode) .blogCard {
+  background-color: #333;
+  border-color: #555;
+}
+
+:global(body.dark-mode) .blogCard .title {
+  color: #ddd;
+}
+
+:global(body.dark-mode) .blogCard .content {
+  color: #ccc;
+}
+
+:global(body.dark-mode) .blogCard .blogCardFooter {
+  color: #66aaff;
+}
+
+:global(body.dark-mode) .blogCardImage {
+  background: #444;
+}

@@ -7,6 +7,15 @@ import { FaSearch, FaMoon, FaSun, FaChevronDown, FaTimes } from "react-icons/fa"
 import useFetchCategories from "../hooks/useFetchCategories";
 import styles from "../styles/navbar.module.css";
 
+// Helper function to generate a slug from text
+const slugify = (text) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
+
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -60,9 +69,12 @@ const Navbar = () => {
     }
   };
 
-  // Redirect to the category page when a subcategory is clicked
-  const selectSubcategory = (subcategoryId) => {
-    router.push(`/category/${subcategoryId}`);
+  // Updated: Redirect to SEO-friendly category page using a slug for the subcategory.
+  // Instead of passing an ID, we generate (or use an existing) slug from the subcategory name.
+  const selectSubcategory = (subcategory) => {
+    // Use existing slug if available; otherwise generate one.
+    const subcategorySlug = subcategory.slug || slugify(subcategory.name);
+    router.push(`/category/${subcategorySlug}`);
     if (isMobile) setActiveCategory(null);
   };
 
@@ -142,7 +154,11 @@ const Navbar = () => {
                   {activeCategory === category.id && category.subcategories?.length > 0 && (
                     <div className={styles.dropdownMenu}>
                       {category.subcategories.map((sub) => (
-                        <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub.id)}>
+                        <button
+                          key={sub.id}
+                          className={styles.dropdownItem}
+                          onClick={() => selectSubcategory(sub)}
+                        >
                           {sub.name}
                         </button>
                       ))}
@@ -184,7 +200,11 @@ const Navbar = () => {
                     {activeCategory === category.id && category.subcategories?.length > 0 && (
                       <div className={`${styles.dropdownMenu} ${styles.dropdownMenuActive}`}>
                         {category.subcategories.map((sub) => (
-                          <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub.id)}>
+                          <button
+                            key={sub.id}
+                            className={styles.dropdownItem}
+                            onClick={() => selectSubcategory(sub)}
+                          >
                             {sub.name}
                           </button>
                         ))}

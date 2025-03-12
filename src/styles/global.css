@@ -1,8 +1,8 @@
 /* ====== Global Variables & Reset ====== */
 :root {
   --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --background-color: #f9f9f9;
-  --text-color: #000000;
+  --background-color: #333333;  /* Dark grey default */
+  --text-color: #f0f0f0;        /* Light text */
   --primary-color: #007bff;
   --max-width: 1200px;
 }
@@ -57,7 +57,7 @@ body {
 
 /* ====== Global Dark Mode Overrides ====== */
 body.dark-mode {
-  --background-color: #222222;
+  --background-color: #222222;  /* Even darker for dark mode */
   --text-color: #ffffff;
   background-color: var(--background-color);
   color: var(--text-color);
@@ -70,8 +70,8 @@ body.dark-mode a {
 /* ====== Blog Cards Grid Container ====== */
 .blog-cards-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Always 2 columns */
-  gap: 16px;                         
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
   margin: 16px auto;
   max-width: var(--max-width);
 }
@@ -102,4 +102,14 @@ body.dark-mode a {
 .pagination button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+/* ====== Additional Dark Mode Overrides for Specific Elements ====== */
+body.dark-mode .sidebar {
+  background-color: #333;
+}
+
+body.dark-mode .blogCard {
+  background-color: #444;
+  color: #eee;
 }

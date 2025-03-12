@@ -5,6 +5,7 @@ import NavBar from '../components/NavBar';
 import Footer from '../pages/Footer'; // Fixed incorrect import path
 import SEO from '../components/Seo'; 
 import Head from 'next/head';
+import '../styles/navbar.module.css';
 
 function MyApp({ Component, pageProps }) {
   // Create a QueryClient instance
