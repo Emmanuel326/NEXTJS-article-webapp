@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import Navbar from '../components/Navbar';
+import Navbar from '../components/NavBar';
 import AdminArticleEditor from '../components/AdminArticleEditor';
 import { motion } from 'framer-motion';
 import styles from '../styles/adminpage.module.css';

@@ -9,7 +9,6 @@ const useFetchCategories = () => {
       if (!data || !Array.isArray(data)) {
         return [];
       }
-
       // Recursive function to process categories
       const processCategory = (category) => ({
         id: category.id,
@@ -18,7 +17,6 @@ const useFetchCategories = () => {
           ? category.subcategories.map(processCategory)
           : [],
       });
-
       return data.map(processCategory);
     },
     onError: (error) => {

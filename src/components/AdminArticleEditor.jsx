@@ -10,8 +10,8 @@ import Select from 'react-select';
 import { createArticle } from '../services/api';
 import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
-import useFetchAllArticles from '../hooks/useFetchAllArticles';
-import useFetchCategory from '../hooks/useFetchCategory';
+import useFetchAllArticles from '../hooks/UseFetchAllArticles';
+import useFetchCategory from '../hooks/useFetchCategories';
 import styles from '../styles/admincomponent.module.css';
 
 // Dynamically import ReactQuill to avoid SSR issues

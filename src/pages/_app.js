@@ -1,17 +1,13 @@
-import '../styles/global.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
-import NavBar from '../components/NavBar';
-import Footer from '../pages/Footer'; // Fixed incorrect import path
-import SEO from '../components/Seo'; 
-import Head from 'next/head';
-import '../styles/navbar.module.css';
+import "../styles/global.css";
+import NavBar from "../components/NavBar";
+import Footer from "../pages/Footer"; // Ensure this is the correct path
+import SEO from "../components/Seo";
+import Head from "next/head";
+import "../styles/navbar.module.css";
+import QueryProvider from "../context/QueryProvider"; // Adjust the path if needed
 
 function MyApp({ Component, pageProps }) {
-  // Create a QueryClient instance
-  const [queryClient] = useState(() => new QueryClient());
-
-  // Structured data (JSON-LD)
+  // JSON-LD structured data for SEO
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -26,8 +22,8 @@ function MyApp({ Component, pageProps }) {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SEO 
+    <QueryProvider>
+      <SEO
         title="Finance Insights - Your Trusted Finance Hub"
         description="Get the latest financial insights, investment strategies, and economic trends to make informed financial decisions."
         url="https://yourdomain.com"
@@ -35,14 +31,16 @@ function MyApp({ Component, pageProps }) {
         canonical="https://yourdomain.com"
       />
       <Head>
-        {/* Viewport meta tag moved from _document.js to _app.js */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </Head>
       <NavBar />
       <Component {...pageProps} />
       <Footer />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 }
 
