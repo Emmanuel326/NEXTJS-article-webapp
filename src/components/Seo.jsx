@@ -33,12 +33,12 @@ const SEO = ({ title, description, url, image, keywords, canonical }) => {
       {keywords && <meta name="keywords" content={keywords} />}
 
       {/* Canonical URL */}
-      <link rel="canonical" href={canonical || url || "https://yourdomain.com"} />
+      <link rel="canonical" href={canonical || url || "https://fynanceguide.site"} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:title" content={title || "Default Title"} />
       <meta property="og:description" content={description || "Default description for your website."} />
-      <meta property="og:url" content={url || "https://yourdomain.com"} />
+      <meta property="og:url" content={url || "https://fynanceguide.site"} />
       {image && <meta property="og:image" content={image} />}
       <meta property="og:type" content="article" />
 

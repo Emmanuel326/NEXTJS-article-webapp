@@ -11,11 +11,11 @@ const Home = () => {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Our Blog",
-    "url": "https://yourdomain.com/home",
+    "name": "Fynance Guide",
+    "url": "https://www.fynanceguide.site",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://yourdomain.com/search?q={search_term_string}",
+      "target": "https://www.fynanceguide.site/search?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };
@@ -23,22 +23,25 @@ const Home = () => {
   return (
     <>
       <Head>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </Head>
       {/* SEO Meta Tags */}
       <SEO
-        title="Welcome to Our Blog"
+        title="Welcome to Fynance Guide"
         description="Discover the latest insights, trends, and expert advice."
-        url="https://yourdomain.com/home"
-        image="https://yourdomain.com/hero-image.jpg"
+        url="https://www.fynanceguide.site"
+        image="https://www.fynanceguide.site/hero-image.jpg"
         keywords="blog, articles, insights, trends"
-        canonical="https://yourdomain.com/home"
+        canonical="https://www.fynanceguide.site"
       />
 
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>Welcome to Our Blog</h1>
+          <h1 className={styles.heroTitle}>Welcome to Fynance Guide</h1>
           <p className={styles.heroSubtitle}>
             Discover the latest insights, trends, and expert advice.
           </p>

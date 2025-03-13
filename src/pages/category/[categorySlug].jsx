@@ -84,7 +84,7 @@ const Category = () => {
         <meta name="description" content={pageDescription} />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta property="og:url" content={`https://yourwebsite.com/category/${slugOrId}`} />
+        <meta property="og:url" content={`https://fynanceguide.site/category/${slugOrId}`} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <script

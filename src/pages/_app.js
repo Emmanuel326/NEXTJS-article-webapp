@@ -12,8 +12,8 @@ function MyApp({ Component, pageProps }) {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Finance Insights",
-    "url": "https://yourdomain.com",
-    "logo": "https://yourdomain.com/logo.png",
+    "url": "https://fynanceguide.site",
+    "logo": "https://fynanceguide.site/logo.png",
     "sameAs": [
       "https://www.facebook.com/yourpage",
       "https://twitter.com/yourhandle",
@@ -26,9 +26,9 @@ function MyApp({ Component, pageProps }) {
       <SEO
         title="Finance Insights - Your Trusted Finance Hub"
         description="Get the latest financial insights, investment strategies, and economic trends to make informed financial decisions."
-        url="https://yourdomain.com"
+        url="https://fynanceguide.site"
         keywords="finance, investing, cryptocurrency, stock market, economic analysis"
-        canonical="https://yourdomain.com"
+        canonical="https://fynanceguide.site"
       />
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />

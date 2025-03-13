@@ -65,7 +65,7 @@ const BlogDetails = () => {
     );
   }
 
-  const pageUrl = `https://yourfrontenddomain.com/category/${categorySlug}/${article.slug}`;
+  const pageUrl = `https://fynanceguide.site/category/${categorySlug}/${article.slug}`;
   const pageTitle = `${article.title} | My Blog`;
   const pageDescription = article.excerpt || article.content.slice(0, 150);
 
@@ -84,7 +84,7 @@ const BlogDetails = () => {
       "name": "Your Website Name",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://yourfrontenddomain.com/logo.png",
+        "url": "https://fynanceguide.site/logo.png",
       },
     },
     "datePublished": article.publishedAt || new Date().toISOString(),

@@ -104,7 +104,7 @@ const SearchResults = () => {
         <meta property="og:title" content={`Search results for "${queryParam}"`} />
         <meta property="og:description" content={`Explore blog posts related to "${queryParam}".`} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`https://myblog.com/search?q=${queryParam}`} />
+        <meta property="og:url" content={`https://fynanceguide.site/search?q=${queryParam}`} />
         <meta name="twitter:title" content={`Search results for "${queryParam}"`} />
         <meta name="twitter:description" content={`Check out articles related to "${queryParam}".`} />
         <meta name="twitter:card" content="summary_large_image" />
