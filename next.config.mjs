@@ -2,14 +2,21 @@
 const nextConfig = {
   images: {
     remotePatterns: [
+      // Local backend for development
       {
         protocol: "http",
         hostname: "localhost",
         port: "8000",
         pathname: "/media/**",
       },
+      // Production backend using api.fynanceguide.site
+      {
+        protocol: "https",
+        hostname: "api.fynanceguide.site",
+        pathname: "/media/**",
+      },
     ],
   },
 };
 
-export default nextConfig; // ✅ Use `export default` instead of `module.exports`
+export default nextConfig;
