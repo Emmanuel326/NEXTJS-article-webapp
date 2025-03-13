@@ -1,0 +1,59 @@
+/* layout.module.css */
+
+/* Mobile-first base layout */
+.layoutWrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* Top Section: Top Stories rendered normally (non-sticky) */
+  .topSection {
+    margin: 16px auto;
+    text-align: center;
+    padding: 8px 0;
+    background-color: var(--background-color);
+  }
+  
+  /* Content Area: on mobile, stack main content and sidebar vertically */
+  .contentArea {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 16px 0;
+  }
+  
+  /* Main Content takes full width on mobile */
+  .mainContent {
+    flex: 1;
+  }
+  
+  /* Recommended Sidebar on mobile: appears below main content */
+  .stickySide {
+    margin-top: 24px;
+  }
+  
+  /* Tablet and Larger Screens (min-width: 1024px) */
+  @media (min-width: 1024px) {
+    .contentArea {
+      flex-direction: row;
+      gap: 24px;
+      min-height: 80vh; /* Ensures enough height for elements */
+    }
+    
+    .mainContent {
+      flex: 3; /* Main content gets more space */
+    }
+    
+    /* Recommended Sidebar now scrolls normally (non-sticky) */
+    .stickySide {
+      flex: 1;
+      /* Removed sticky positioning */
+      background-color: var(--background-color);
+      padding: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      height: fit-content;
+    }
+  }
+  

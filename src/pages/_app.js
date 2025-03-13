@@ -1,10 +1,12 @@
 import "../styles/global.css";
 import NavBar from "../components/NavBar";
-import Footer from "../pages/Footer"; // Ensure this is the correct path
+import Footer from "../pages/Footer"; // Verify this path is correct
+import TopStories from "../components/TopStories";
+import RecommendedSidebar from "../components/RecommendedSidebar";
 import SEO from "../components/Seo";
 import Head from "next/head";
-import "../styles/navbar.module.css";
-import QueryProvider from "../context/QueryProvider"; // Adjust the path if needed
+import QueryProvider from "../context/QueryProvider";
+import styles from "../styles/layout.module.css"; // Import your layout module
 
 function MyApp({ Component, pageProps }) {
   // JSON-LD structured data for SEO
@@ -37,8 +39,30 @@ function MyApp({ Component, pageProps }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </Head>
-      <NavBar />
-      <Component {...pageProps} />
+
+      {/* Sticky NavBar */}
+      <div className={styles.stickyNav}>
+        <NavBar />
+      </div>
+
+      {/* Layout Wrapper using layout.module.css */}
+      <div className={styles.layoutWrapper}>
+        {/* Top Stories rendered normally (non-sticky) */}
+        <div className={styles.topSection}>
+          <TopStories />
+        </div>
+
+        {/* Content Area: Main Content & Sticky Sidebar */}
+        <div className={styles.contentArea}>
+          <div className={styles.mainContent}>
+            <Component {...pageProps} />
+          </div>
+          <div className={styles.stickySide}>
+            <RecommendedSidebar />
+          </div>
+        </div>
+      </div>
+
       <Footer />
     </QueryProvider>
   );

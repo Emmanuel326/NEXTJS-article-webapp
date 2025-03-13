@@ -1,83 +1,34 @@
 /* home.module.css */
 
-/* ====== Hero Section ====== */
-.hero {
-  background: url('/path/to/your/hero-image.jpg') center/cover no-repeat;
-  padding: 100px 20px;
-  color: #fff;
-  text-align: center;
-}
-
-.heroContent {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.heroTitle {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
-
-.heroSubtitle {
-  font-size: 1.2rem;
-  line-height: 1.6;
-}
-
-/* ====== Featured Section ====== */
-.featuredSection {
-  padding: 40px 20px;
-  background-color: #f9f9f9;
-}
-
-/* ====== Global Container ====== */
+/* Global container */
 .container {
-  max-width: var(--max-width);
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-/* ====== Section Title ====== */
-.sectionTitle {
-  font-size: 2rem;
+/* Mobile layout: vertical stacking */
+.topStoriesSection,
+.latestBlogsSection,
+.recommendedSidebarSection {
+  margin-bottom: 24px;
+}
+
+/* Center Top Stories on mobile */
+.topStoriesSection {
   text-align: center;
-  margin-bottom: 20px;
-  color: #333;
 }
 
-/* ====== Blog Cards Grid Container ====== */
-.blog-cards-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns per row */
-  gap: 16px;                         /* Adjust gap for close spacing */
-  margin: 20px auto;
-  max-width: 1200px;                 /* Or use your --max-width variable */
-}
-
-/* ====== Pagination Controls ====== */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-top: 20px;
-}
-
-.pagination button {
-  padding: 8px 12px;
-  border: none;
-  background-color: var(--primary-color);
-  color: #fff;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.pagination button:hover:not(:disabled) {
-  background-color: #0056b3; /* Darker for hover effect */
-}
-
-.pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+/* Desktop layout */
+@media (min-width: 1024px) {
+  .mainContentWrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Latest Blogs in left column, Recommended on right */
+    gap: 24px;
+  }
+  /* Remove bottom margin for sections inside the grid */
+  .latestBlogsSection,
+  .recommendedSidebarSection {
+    margin-bottom: 0;
+  }
 }

@@ -1,0 +1,71 @@
+/* TopStories.module.css */
+
+/* Mobile-first base styles */
+.topStories {
+    background-color: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 16px auto;  /* Center horizontally */
+    max-width: 600px;   /* Limit width on small screens */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .topStories h2 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .topStories ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .topStories li {
+    border-bottom: 1px solid #eee;
+    padding: 8px 0;
+  }
+  
+  .topStories li:last-child {
+    border-bottom: none;
+  }
+  
+  .topStories a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+  
+  .topStories a:hover {
+    color: #0056b3;
+  }
+  
+  .topStories p {
+    margin: 4px 0 0 0;
+    color: #555;
+    font-size: 0.9rem;
+  }
+  
+  /* Tablet and Desktop enhancements */
+  @media (min-width: 768px) {
+    .topStories {
+      padding: 20px;
+      max-width: 800px; /* Increase max-width for larger screens */
+    }
+  
+    .topStories h2 {
+      font-size: 1.75rem;
+    }
+  
+    .topStories a {
+      font-size: 1.1rem;
+    }
+  
+    .topStories p {
+      font-size: 1rem;
+    }
+  }
+  

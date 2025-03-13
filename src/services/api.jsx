@@ -30,7 +30,7 @@ export const fetchCategories = async () => {
   const result = await fetchData("categories");
   console.log("Categories fetch result:", result);
 
-  // Updated to handle the paginated response structure (count, next, previous, results)
+  // Handle the paginated response structure if needed (count, next, previous, results)
   if (result && result.results && Array.isArray(result.results)) {
     return result.results.map(category => ({
       ...category,
@@ -47,7 +47,7 @@ export const fetchBlogs = async ({ page = 1, limit = 10, categoryId = null } = {
   console.log("Fetching blogs with params:", params);
   const result = await fetchData(endpoint, params);
   console.log("Blogs fetch result:", result);
-  // Wrap the result if it's an array so that we always have a consistent shape
+  // Ensure a consistent shape: if result is an array, wrap it in an object with a results property.
   return Array.isArray(result) ? { results: result } : result;
 };
 
@@ -59,7 +59,7 @@ export const fetchBlogById = async (id) => {
   return result;
 };
 
-// Fetch a single blog by slug (new)
+// Fetch a single blog by slug
 export const fetchBlogBySlug = async (slug) => {
   console.log(`Fetching blog by slug: ${slug}`);
   // Assuming your API supports a "slug" endpoint for articles, e.g., articles/slug/{slug}/
@@ -98,4 +98,22 @@ export const createArticle = async (articleData) => {
     console.error("Error creating article:", error?.response?.status, error?.message);
     throw new Error("Failed to create article. Please try again later.");
   }
+};
+
+// Fetch top stories (endpoint: top-stories)
+// Returns articles marked as top stories (is_featured) and published.
+export const fetchTopStories = async () => {
+  console.log("Fetching top stories...");
+  const result = await fetchData("top-stories");
+  console.log("Top stories fetch result:", result);
+  return result;
+};
+
+// Fetch recommended article (endpoint: recommended)
+// Returns articles marked as recommended (is_recommended) and published.
+export const fetchRecommended = async () => {
+  console.log("Fetching recommended article...");
+  const result = await fetchData("recommended");
+  console.log("Recommended article fetch result:", result);
+  return result;
 };

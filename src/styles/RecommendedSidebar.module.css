@@ -1,0 +1,54 @@
+/* RecommendedSidebar.module.css */
+
+/* Mobile-first base styles */
+.recommendedSidebar {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 16px 0;
+  }
+  
+  .recommendedSidebar h3 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+    color: #333;
+  }
+  
+  .recommendedSidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .recommendedSidebar li {
+    margin-bottom: 8px;
+  }
+  
+  .recommendedSidebar a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+  
+  .recommendedSidebar a:hover {
+    color: #0056b3;
+  }
+  
+  /* Tablet and Desktop enhancements */
+  @media (min-width: 768px) {
+    .recommendedSidebar {
+      padding: 20px;
+    }
+  
+    .recommendedSidebar h3 {
+      font-size: 1.5rem;
+    }
+  
+    .recommendedSidebar a {
+      font-size: 1.1rem;
+    }
+  }
+  

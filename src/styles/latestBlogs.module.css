@@ -1,112 +1,76 @@
-/* ====== Latest Blogs Section ====== */
-.latest-blogs-section {
-  padding: 40px 16px;
-  background-color: #f9f9f9;
-}
+/* latestBlogs.module.css */
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.section-title {
+/* Common Styles */
+.sectionTitle {
   text-align: center;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
   margin-bottom: 20px;
 }
 
-/* ====== Blog Grid Layout (2 Columns, 5 Rows) ====== */
-.blog-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columns */
-  grid-template-rows: repeat(5, auto); /* 5 rows */
-  gap: 20px;
-  justify-content: center;
-  align-items: stretch; /* Ensures cards stretch equally */
+/* Mobile Layout: Horizontal Carousel */
+.latestBlogsMobile {
+  padding: 40px 16px;
+  background-color: var(--secondary-color, #f9f9f9);
 }
 
-.blog-card-container {
+.blogsContainer {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+}
+
+.blogCardWrapper {
+  flex: 0 0 80%;
+  scroll-snap-align: start;
+}
+
+/* Desktop Layout: Vertical Grid with Pagination */
+.latestBlogsDesktop {
+  padding: 40px 16px;
+  background-color: var(--secondary-color, #f9f9f9);
+}
+
+.blogsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 20px;
+}
+
+.blogCardContainer {
   display: flex;
   justify-content: center;
   align-items: stretch;
-  width: 100%;
 }
 
-/* ====== Fix Card Sizing ====== */
-.blog-card {
-  width: 100%;
-  max-width: 500px;
-  min-height: 350px;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
-  text-decoration: none;
-  color: inherit;
-}
-
-.blog-card:hover {
-  transform: translateY(-5px);
-}
-
-/* ====== Fix Title Readability ====== */
-.blog-card-content .title {
-  color: #222;
-  font-size: 1.4rem;
-  font-weight: bold;
-  text-align: center;
-}
-
-/* ====== Pagination Styles ====== */
+/* Pagination Controls for Desktop */
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 30px;
   gap: 10px;
+  margin-top: 20px;
 }
 
 .pagination button {
-  background-color: #007bff;
-  color: white;
+  padding: 8px 12px;
   border: none;
-  padding: 10px 16px;
-  font-size: 1rem;
-  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: #fff;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
-.pagination button:hover {
-  background-color: #0056b3;
+.pagination button:hover:not(:disabled) {
+  background-color: var(--link-hover-color);
 }
 
 .pagination button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
-}
-
-.pagination-list {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  align-items: center;
-}
-
-/* Use a single class for the current pagination link */
-.paginationLinkCurrent {
-  font-weight: bold;
-  color: #007bff;
-  font-size: 1.1rem;
-}
-
-/* ====== Responsive Design ====== */
-@media (max-width: 768px) {
-  .blog-grid {
-    grid-template-columns: repeat(1, 1fr); /* 1 column on small screens */
-    grid-template-rows: auto;
-  }
 }

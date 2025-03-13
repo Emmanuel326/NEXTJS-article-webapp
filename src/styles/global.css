@@ -1,10 +1,13 @@
 /* ====== Global Variables & Reset ====== */
 :root {
   --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --background-color: #333333;  /* Dark grey default */
-  --text-color: #f0f0f0;        /* Light text */
+  --background-color: #ffffff;  /* Light mode: white background */
+  --text-color: #333333;        /* Light mode: dark text */
   --primary-color: #007bff;
+  --border-color: #ccc;
+  --link-hover-color: #0056b3;
   --max-width: 1200px;
+  --dark-link-color: #66aaff;   /* New variable for dark mode links */
 }
 
 *,
@@ -57,14 +60,15 @@ body {
 
 /* ====== Global Dark Mode Overrides ====== */
 body.dark-mode {
-  --background-color: #222222;  /* Even darker for dark mode */
+  --background-color: #222222;  /* Dark mode background */
   --text-color: #ffffff;
+  --border-color: #555;
   background-color: var(--background-color);
   color: var(--text-color);
 }
 
 body.dark-mode a {
-  color: inherit;
+  color: var(--dark-link-color);  /* Use dedicated dark mode link color */
 }
 
 /* ====== Blog Cards Grid Container ====== */
@@ -74,6 +78,9 @@ body.dark-mode a {
   gap: 16px;
   margin: 16px auto;
   max-width: var(--max-width);
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  border-radius: 8px;
 }
 
 /* ====== Pagination Controls ====== */
@@ -96,7 +103,7 @@ body.dark-mode a {
 }
 
 .pagination button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: var(--link-hover-color);
 }
 
 .pagination button:disabled {
@@ -106,10 +113,11 @@ body.dark-mode a {
 
 /* ====== Additional Dark Mode Overrides for Specific Elements ====== */
 body.dark-mode .sidebar {
-  background-color: #333;
+  background-color: #444;
+  border: 1px solid var(--border-color);
 }
 
 body.dark-mode .blogCard {
   background-color: #444;
-  color: #eee;
+  color: var(--text-color);
 }

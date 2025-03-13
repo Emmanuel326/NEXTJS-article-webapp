@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useForm, Controller } from 'react-hook-form';
 import dynamic from 'next/dynamic';
@@ -12,10 +12,13 @@ import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
 import useFetchAllArticles from '../hooks/UseFetchAllArticles';
 import useFetchCategory from '../hooks/useFetchCategories';
+import useFetchTags from '../hooks/useFetchTags'; // New hook for fetching tags
 import styles from '../styles/admincomponent.module.css';
 
 // Dynamically import ReactQuill to avoid SSR issues
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 function AdminArticleEditor() {
   const {
@@ -23,6 +26,7 @@ function AdminArticleEditor() {
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -30,7 +34,7 @@ function AdminArticleEditor() {
       content: '',
       excerpt: '',
       category_id: '',
-      tag_ids: '',
+      tag_ids: [],
       status: 'draft',
       seo_title: '',
       meta_description: '',
@@ -40,7 +44,38 @@ function AdminArticleEditor() {
     },
   });
 
-  const mutation = useMutation(newArticle => createArticle(newArticle));
+  // Autosave: Load saved draft if exists
+  useEffect(() => {
+    const draft = localStorage.getItem("adminArticleDraft");
+    if (draft) {
+      try {
+        const parsedDraft = JSON.parse(draft);
+        // Only restore fields that are safe (not files)
+        Object.keys(parsedDraft).forEach(key => {
+          if (key !== 'image' && key !== 'additionalImages') {
+            setValue(key, parsedDraft[key]);
+          }
+        });
+      } catch (error) {
+        console.error("Error parsing draft:", error);
+      }
+    }
+  }, [setValue]);
+
+  // Autosave: Save form state to localStorage with debounce
+  const formValues = watch();
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      localStorage.setItem("adminArticleDraft", JSON.stringify(formValues));
+    }, 1000);
+    return () => clearTimeout(handler);
+  }, [formValues]);
+
+  //const mutation = useMutation(newArticle => createArticle(newArticle));
+  const mutation = useMutation({
+    mutationFn: createArticle,
+  });
+  
 
   // Fetch all articles for related articles select.
   const { data: allArticles = [] } = useFetchAllArticles();
@@ -65,13 +100,31 @@ function AdminArticleEditor() {
     [categories]
   );
 
+  // Fetch existing tags for the tags dropdown.
+  const { data: tags = [] } = useFetchTags();
+  const tagOptions = useMemo(
+    () =>
+      tags.map(tag => ({
+        value: tag.id,
+        label: tag.name,
+      })),
+    [tags]
+  );
+
   // Featured image dropzone (single file)
   const [selectedFile, setSelectedFile] = useState(null);
+  const [featuredPreview, setFeaturedPreview] = useState(null);
   const onDropFeatured = useCallback(
     acceptedFiles => {
       if (acceptedFiles && acceptedFiles.length > 0) {
-        setSelectedFile(acceptedFiles[0]);
-        setValue('image', acceptedFiles[0]);
+        const file = acceptedFiles[0];
+        if (file.size > MAX_FILE_SIZE) {
+          alert("Featured image exceeds maximum size of 5MB.");
+          return;
+        }
+        setSelectedFile(file);
+        setValue('image', file);
+        setFeaturedPreview(URL.createObjectURL(file));
       }
     },
     [setValue]
@@ -91,7 +144,16 @@ function AdminArticleEditor() {
   const [additionalImages, setAdditionalImages] = useState([]);
   const onDropAdditional = useCallback(acceptedFiles => {
     if (acceptedFiles && acceptedFiles.length > 0) {
-      setAdditionalImages(prevFiles => [...prevFiles, ...acceptedFiles]);
+      const validFiles = acceptedFiles.filter(file => {
+        if (file.size > MAX_FILE_SIZE) {
+          alert(`File ${file.name} exceeds 5MB size limit.`);
+          return false;
+        }
+        return true;
+      });
+      if (validFiles.length > 0) {
+        setAdditionalImages(prevFiles => [...prevFiles, ...validFiles]);
+      }
     }
   }, []);
 
@@ -105,6 +167,10 @@ function AdminArticleEditor() {
     multiple: true,
   });
 
+  const removeAdditionalImage = index => {
+    setAdditionalImages(prevFiles => prevFiles.filter((_, i) => i !== index));
+  };
+
   // Handle form submission.
   const onSubmit = data => {
     const formData = new FormData();
@@ -112,18 +178,13 @@ function AdminArticleEditor() {
     formData.append('content', data.content);
     formData.append('excerpt', data.excerpt);
     formData.append('category_id', data.category_id);
-    formData.append(
-      'tag_ids',
-      JSON.stringify(data.tag_ids.split(',').map(tag => tag.trim()))
-    );
+    // Convert tags array to JSON string (using tag values)
+    formData.append('tag_ids', JSON.stringify(data.tag_ids.map(tag => tag.value)));
     formData.append('status', data.status);
     formData.append('seo_title', data.seo_title);
     formData.append('meta_description', data.meta_description);
     formData.append('is_featured', data.is_featured);
-    formData.append(
-      'related_articles_ids',
-      JSON.stringify(data.related_articles)
-    );
+    formData.append('related_articles_ids', JSON.stringify(data.related_articles));
     if (data.image) {
       formData.append('image', data.image);
     }
@@ -201,10 +262,23 @@ function AdminArticleEditor() {
           )}
         </div>
 
-        {/* Tags */}
+        {/* Tags using CreatableSelect for multi-select */}
         <div>
-          <label htmlFor="tag_ids">Tags (comma separated):</label>
-          <input id="tag_ids" type="text" {...register('tag_ids')} />
+          <label htmlFor="tag_ids">Tags:</label>
+          <Controller
+            control={control}
+            name="tag_ids"
+            render={({ field: { onChange, value } }) => (
+              <CreatableSelect
+                isMulti
+                value={value}
+                onChange={onChange}
+                options={tagOptions} // Use fetched tag options here
+                placeholder="Select or create tags..."
+                formatCreateLabel={inputValue => `Create "${inputValue}"`}
+              />
+            )}
+          />
         </div>
 
         {/* Status */}
@@ -265,41 +339,58 @@ function AdminArticleEditor() {
         {/* Featured Image Upload */}
         <div>
           <label>Upload Featured Image:</label>
-          <div {...getRootPropsFeatured({ className: styles.dropzone })}>
+          <div
+            {...getRootPropsFeatured({ className: styles.dropzone, "aria-label": "Featured image dropzone" })}
+          >
             <input {...getInputPropsFeatured()} />
             {isDragActiveFeatured ? (
               <p>Drop the featured image here...</p>
             ) : (
               <p>Drag 'n' drop a featured image here, or click to select one</p>
             )}
-            {selectedFile && <p>Selected file: {selectedFile.name}</p>}
           </div>
+          {featuredPreview && (
+            <div className={styles.previewContainer}>
+              <img src={featuredPreview} alt="Featured Preview" className={styles.previewImage} />
+            </div>
+          )}
         </div>
 
         {/* Additional Images Upload */}
         <div>
           <label>Upload Additional Images:</label>
-          <div {...getRootPropsAdditional({ className: styles.dropzone })}>
+          <div
+            {...getRootPropsAdditional({ className: styles.dropzone, "aria-label": "Additional images dropzone" })}
+          >
             <input {...getInputPropsAdditional()} />
             {isDragActiveAdditional ? (
               <p>Drop additional images here...</p>
             ) : (
               <p>Drag 'n' drop additional images here, or click to select</p>
             )}
-            {additionalImages.length > 0 && (
-              <ul className={styles.additionalImagesList}>
-                {additionalImages.map((file, index) => (
-                  <li key={index}>{file.name}</li>
-                ))}
-              </ul>
-            )}
           </div>
+          {additionalImages.length > 0 && (
+            <ul className={styles.additionalImagesList}>
+              {additionalImages.map((file, index) => {
+                const preview = URL.createObjectURL(file);
+                return (
+                  <li key={index} className={styles.imagePreviewItem}>
+                    <img src={preview} alt={`Additional Preview ${index}`} className={styles.additionalPreviewImage} />
+                    <button type="button" onClick={() => removeAdditionalImage(index)}>
+                      Remove
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
 
-        <button type="submit">Submit Article</button>
+        <button type="submit" disabled={mutation.isLoading}>
+          {mutation.isLoading ? "Submitting..." : "Submit Article"}
+        </button>
       </form>
 
-      {mutation.isLoading && <p>Submitting...</p>}
       {mutation.isError && (
         <p className={styles.error}>
           Error creating article: {mutation.error?.message || 'An unexpected error occurred.'}
