@@ -107,7 +107,7 @@ const Navbar = () => {
   return (
     <nav className={`${styles.navbar} ${darkMode ? styles.navbarDark : styles.navbarLight}`}>
       <div className={styles.navbarBrand}>
-        <Link href="/home" legacyBehavior>
+        <Link href="/" legacyBehavior>
           <a className={styles.logo}>💰 Fynance Guide</a>
         </Link>
         <button className={styles.darkModeToggle} onClick={toggleDarkMode}>
@@ -140,7 +140,7 @@ const Navbar = () => {
                 </button>
               </div>
             </form>
-            <Link href="/home" legacyBehavior>
+            <Link href="/" legacyBehavior>
               <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>
                 Home
               </a>
@@ -183,7 +183,7 @@ const Navbar = () => {
         <>
           {!desktopSearchOpen ? (
             <div className={styles.navbarMenu} ref={dropdownRef}>
-              <Link href="/home" legacyBehavior>
+              <Link href="/" legacyBehavior>
                 <a className={styles.navbarItem}>Home</a>
               </Link>
               {!isLoading &&
