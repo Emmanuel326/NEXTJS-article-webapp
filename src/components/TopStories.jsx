@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import "../styles/TopStories.module.css"
 import styles from '../styles/TopStories.module.css';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.fynanceguide.site/api/';
 
 const fetchTopStories = async () => {
   console.log("fetchTopStories: Starting fetch for top stories...");
