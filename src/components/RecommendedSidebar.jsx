@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import styles from '../styles/RecommendedSidebar.module.css';
 import "../styles/RecommendedSidebar.module.css"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://fynanceguide.site/api/';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.fynanceguide.site/api/';
 
 const fetchRecommended = async () => {
   console.log("fetchRecommended: Function called");
