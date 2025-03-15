@@ -1,247 +1,123 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { FaSearch, FaMoon, FaSun, FaChevronDown } from "react-icons/fa";
-import useFetchCategories from "../hooks/useFetchCategories";
-import styles from "../styles/navbar.module.css";
-
-// Helper function to generate a slug from text
-const slugify = (text) =>
-  text
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[^\w\-]+/g, "")
-    .replace(/\-\-+/g, "-");
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { FaBars, FaTimes, FaMoon, FaSun } from 'react-icons/fa';
 
 const Navbar = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isMobile, setIsMobile] = useState(false);
-  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const router = useRouter();
-  const dropdownRef = useRef(null);
 
-  // Fetch categories; assume API returns { results: [...] }
-  const { data: fetchedData, isLoading } = useFetchCategories();
-  const categories =
-    !isLoading && fetchedData && fetchedData.results
-      ? fetchedData.results
-      : [];
-
-  // Compute IDs of all categories that appear as subcategories.
-  const subcategoryIds = new Set();
-  categories.forEach((cat) => {
-    if (cat.subcategories && cat.subcategories.length > 0) {
-      cat.subcategories.forEach((sub) => {
-        subcategoryIds.add(sub.id);
-      });
-    }
-  });
-
-  // Filter out categories that are also subcategories.
-  const parentCategories = categories.filter(
-    (cat) => !subcategoryIds.has(cat.id)
-  );
-
-  // Detect mobile/desktop based on window width
+  // Fetch categories from API
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Toggle dark mode
-  const toggleDarkMode = useCallback(() => {
-    setDarkMode((prev) => !prev);
-    document.body.classList.toggle("dark-mode");
-  }, []);
-
-  // Toggle mobile menu
-  const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
-
-  // For mobile: toggle category dropdown on click
-  const handleCategoryClick = (categoryId) => {
-    if (isMobile) {
-      setActiveCategory((prev) => (prev === categoryId ? null : categoryId));
-    }
-  };
-
-  // For desktop: set active category on hover
-  const handleCategoryMouseEnter = (categoryId) => {
-    if (!isMobile) {
-      setActiveCategory(categoryId);
-    }
-  };
-  const handleCategoryMouseLeave = () => {
-    if (!isMobile) {
-      setActiveCategory(null);
-    }
-  };
-
-  // Redirect to SEO-friendly category page using a slug for the subcategory.
-  const selectSubcategory = (subcategory) => {
-    const subcategorySlug = subcategory.slug || slugify(subcategory.name);
-    router.push(`/category/${subcategorySlug}`);
-    if (isMobile) setActiveCategory(null);
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setActiveCategory(null);
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('https://example.com/api/categories/');
+        const data = await response.json();
+        const categoryMap = {};
+        data.forEach(category => {
+          categoryMap[category.name] = category;
+        });
+        setCategories(Object.values(categoryMap));
+      } catch (error) {
+        console.error('Error fetching categories:', error);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    fetchCategories();
   }, []);
 
-  // Handle search submission
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery("");
-      if (isMobile) {
-        setMenuOpen(false);
-      } else {
-        setDesktopSearchOpen(false);
-      }
-    }
+  // Handle dark mode persistence
+  useEffect(() => {
+    const storedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(storedDarkMode);
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode(prev => {
+      localStorage.setItem('darkMode', !prev);
+      return !prev;
+    });
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(prev => !prev);
+  };
+
+  const toggleCategory = categoryName => {
+    setActiveCategory(prev => (prev === categoryName ? null : categoryName));
   };
 
   return (
-    <nav className={`${styles.navbar} ${darkMode ? styles.navbarDark : styles.navbarLight}`}>
-      <div className={styles.navbarBrand}>
-        <Link href="/" legacyBehavior>
-          <a className={styles.logo}>💰 Fynance Guide</a>
+    <nav className={`bg-${darkMode ? 'gray-900' : 'white'} text-${darkMode ? 'white' : 'black'} shadow-md`}>
+      <div className="container mx-auto flex justify-between items-center p-4">
+        {/* Logo */}
+        <Link href="/">
+          <span className="text-xl font-bold cursor-pointer">MyBlog</span>
         </Link>
-        <button className={styles.darkModeToggle} onClick={toggleDarkMode}>
-          {darkMode ? <FaSun /> : <FaMoon />}
+        
+        {/* Desktop Navigation */}
+        <ul className="hidden md:flex space-x-6">
+          {categories.map(category => (
+            <li key={category.id} className="relative group">
+              <button 
+                onClick={() => toggleCategory(category.name)} 
+                className="hover:text-blue-500"
+              >
+                {category.name}
+              </button>
+              {category.subcategories && activeCategory === category.name && (
+                <ul className="absolute left-0 top-10 w-40 bg-white shadow-lg rounded-md p-2">
+                  {category.subcategories.map(sub => (
+                    <li key={sub.id}>
+                      <Link href={`/category/${category.name}/${sub.name}`} className="block px-4 py-2 hover:bg-gray-200">
+                        {sub.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        {/* Mobile Menu Button */}
+        <button className="md:hidden" onClick={toggleMobileMenu}>
+          {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
         </button>
-        {isMobile && (
-          <button className={styles.navbarBurger} onClick={toggleMenu}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        )}
       </div>
 
-      {isMobile ? (
-        // Mobile layout:
-        menuOpen && (
-          <div className={`${styles.navbarMenu} ${menuOpen ? styles.navbarMenuActive : ""}`} ref={dropdownRef}>
-            <form className={styles.navbarSearch} onSubmit={handleSearch}>
-              <div className={styles.searchContainer}>
-                <input
-                  type="text"
-                  className={styles.searchInput}
-                  placeholder="Search articles..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button type="submit" className={styles.searchIcon}>
-                  <FaSearch />
-                </button>
-              </div>
-            </form>
-            <Link href="/" legacyBehavior>
-              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>Home</a>
-            </Link>
-            {!isLoading &&
-              parentCategories.map((parent) => (
-                <div key={parent.id} className={styles.hasDropdown}>
-                  <button className={styles.dropdownToggle} onClick={() => handleCategoryClick(parent.id)}>
-                    {parent.name} <FaChevronDown />
-                  </button>
-                  {activeCategory === parent.id && parent.subcategories?.length > 0 && (
-                    <div className={styles.dropdownMenu}>
-                      {parent.subcategories.map((sub) => (
-                        <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
-                          {sub.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            <Link href="/about" legacyBehavior>
-              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>About</a>
-            </Link>
-            <Link href="/contact" legacyBehavior>
-              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>Contact</a>
-            </Link>
-          </div>
-        )
-      ) : (
-        // Desktop layout:
-        <>
-          {!desktopSearchOpen ? (
-            <div className={styles.navbarMenu} ref={dropdownRef}>
-              <Link href="/" legacyBehavior>
-                <a className={styles.navbarItem}>Home</a>
-              </Link>
-              {!isLoading &&
-                parentCategories.map((parent) => (
-                  <div
-                    key={parent.id}
-                    className={styles.hasDropdown}
-                    onMouseEnter={() => handleCategoryMouseEnter(parent.id)}
-                    onMouseLeave={handleCategoryMouseLeave}
-                  >
-                    <button className={styles.dropdownToggle} onClick={() => handleCategoryClick(parent.id)}>
-                      {parent.name} <FaChevronDown />
-                    </button>
-                    {activeCategory === parent.id && parent.subcategories?.length > 0 && (
-                      <div className={`${styles.dropdownMenu} ${styles.dropdownMenuActive}`}>
-                        {parent.subcategories.map((sub) => (
-                          <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
-                            {sub.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              <Link href="/about" legacyBehavior>
-                <a className={styles.navbarItem}>About</a>
-              </Link>
-              <Link href="/contact" legacyBehavior>
-                <a className={styles.navbarItem}>Contact</a>
-              </Link>
-              <button className={styles.searchToggle} onClick={() => setDesktopSearchOpen(true)}>
-                <FaSearch />
+      {/* Mobile Navigation */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-gray-800 text-white p-4">
+          {categories.map(category => (
+            <div key={category.id}>
+              <button onClick={() => toggleCategory(category.name)} className="w-full text-left py-2">
+                {category.name}
               </button>
+              {category.subcategories && activeCategory === category.name && (
+                <ul className="pl-4">
+                  {category.subcategories.map(sub => (
+                    <li key={sub.id}>
+                      <Link href={`/category/${category.name}/${sub.name}`} className="block py-1">
+                        {sub.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-          ) : (
-            <div className={styles.desktopSearchOverlay}>
-              <form className={styles.desktopSearchForm} onSubmit={handleSearch}>
-                <input
-                  type="text"
-                  placeholder="Search articles..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                />
-                <button type="button" onClick={() => setDesktopSearchOpen(false)} className={styles.cancelButton}>
-                  Cancel
-                </button>
-                <button type="submit" className={styles.searchSubmitButton}>
-                  Search
-                </button>
-              </form>
-            </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
+
+      {/* Dark Mode Toggle */}
+      <button className="absolute top-4 right-4" onClick={toggleDarkMode}>
+        {darkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
+      </button>
     </nav>
   );
 };
