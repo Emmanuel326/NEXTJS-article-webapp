@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { FaSearch, FaMoon, FaSun, FaChevronDown, FaTimes } from "react-icons/fa";
+import { FaSearch, FaMoon, FaSun, FaChevronDown } from "react-icons/fa";
 import useFetchCategories from "../hooks/useFetchCategories";
 import styles from "../styles/navbar.module.css";
 
@@ -26,16 +26,22 @@ const Navbar = () => {
   const router = useRouter();
   const dropdownRef = useRef(null);
 
-  // Fetch categories; adapt for JSON structure with "results"
-  const { data: fetchedData, isLoading } = useFetchCategories();
+  // Fetch categories; assume API returns { results: [...] }
+  const { data: fetchedData, isLoading, mutate } = useFetchCategories();
+  // Force a fresh fetch on component mount (in case of stale data)
+  useEffect(() => {
+    if (mutate) mutate();
+  }, [mutate]);
+
   const categories =
     !isLoading && fetchedData && fetchedData.results
       ? fetchedData.results
-      : fetchedData || [];
+      : [];
 
-  // Filter to only get parent (top-level) categories.
-  // Using '==' to check for null (which catches both null and undefined)
-  const parentCategories = categories.filter(category => category.parent == null);
+  // Filter to only get parent (top-level) categories (where parent is null)
+  const parentCategories = categories.filter(
+    (category) => category.parent == null
+  );
 
   // Detect mobile/desktop based on window width
   useEffect(() => {
@@ -67,13 +73,14 @@ const Navbar = () => {
       setActiveCategory(categoryId);
     }
   };
+
   const handleCategoryMouseLeave = () => {
     if (!isMobile) {
       setActiveCategory(null);
     }
   };
 
-  // Redirect to SEO-friendly category page using a slug for the subcategory.
+  // Redirect to SEO-friendly category page using subcategory slug
   const selectSubcategory = (subcategory) => {
     const subcategorySlug = subcategory.slug || slugify(subcategory.name);
     router.push(`/category/${subcategorySlug}`);
@@ -125,7 +132,7 @@ const Navbar = () => {
       </div>
 
       {isMobile ? (
-        // Mobile layout:
+        // Mobile layout
         menuOpen && (
           <div className={`${styles.navbarMenu} ${menuOpen ? styles.navbarMenuActive : ""}`} ref={dropdownRef}>
             <form className={styles.navbarSearch} onSubmit={handleSearch}>
@@ -143,24 +150,18 @@ const Navbar = () => {
               </div>
             </form>
             <Link href="/" legacyBehavior>
-              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>
-                Home
-              </a>
+              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>Home</a>
             </Link>
             {!isLoading &&
-              parentCategories.map((category) => (
-                <div key={category.id} className={styles.hasDropdown}>
-                  <button className={styles.dropdownToggle} onClick={() => handleCategoryClick(category.id)}>
-                    {category.name} <FaChevronDown />
+              parentCategories.map((parent) => (
+                <div key={parent.id} className={styles.hasDropdown}>
+                  <button className={styles.dropdownToggle} onClick={() => handleCategoryClick(parent.id)}>
+                    {parent.name} <FaChevronDown />
                   </button>
-                  {activeCategory === category.id && category.subcategories?.length > 0 && (
+                  {activeCategory === parent.id && parent.subcategories?.length > 0 && (
                     <div className={styles.dropdownMenu}>
-                      {category.subcategories.map((sub) => (
-                        <button
-                          key={sub.id}
-                          className={styles.dropdownItem}
-                          onClick={() => selectSubcategory(sub)}
-                        >
+                      {parent.subcategories.map((sub) => (
+                        <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
                           {sub.name}
                         </button>
                       ))}
@@ -169,14 +170,10 @@ const Navbar = () => {
                 </div>
               ))}
             <Link href="/about" legacyBehavior>
-              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>
-                About
-              </a>
+              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>About</a>
             </Link>
             <Link href="/contact" legacyBehavior>
-              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>
-                Contact
-              </a>
+              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>Contact</a>
             </Link>
           </div>
         )
@@ -189,24 +186,20 @@ const Navbar = () => {
                 <a className={styles.navbarItem}>Home</a>
               </Link>
               {!isLoading &&
-                parentCategories.map((category) => (
+                parentCategories.map((parent) => (
                   <div
-                    key={category.id}
+                    key={parent.id}
                     className={styles.hasDropdown}
-                    onMouseEnter={() => handleCategoryMouseEnter(category.id)}
+                    onMouseEnter={() => handleCategoryMouseEnter(parent.id)}
                     onMouseLeave={handleCategoryMouseLeave}
                   >
-                    <button className={styles.dropdownToggle} onClick={() => handleCategoryClick(category.id)}>
-                      {category.name} <FaChevronDown />
+                    <button className={styles.dropdownToggle} onClick={() => handleCategoryClick(parent.id)}>
+                      {parent.name} <FaChevronDown />
                     </button>
-                    {activeCategory === category.id && category.subcategories?.length > 0 && (
+                    {activeCategory === parent.id && parent.subcategories?.length > 0 && (
                       <div className={`${styles.dropdownMenu} ${styles.dropdownMenuActive}`}>
-                        {category.subcategories.map((sub) => (
-                          <button
-                            key={sub.id}
-                            className={styles.dropdownItem}
-                            onClick={() => selectSubcategory(sub)}
-                          >
+                        {parent.subcategories.map((sub) => (
+                          <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
                             {sub.name}
                           </button>
                         ))}
@@ -220,13 +213,11 @@ const Navbar = () => {
               <Link href="/contact" legacyBehavior>
                 <a className={styles.navbarItem}>Contact</a>
               </Link>
-              {/* Search Toggle */}
               <button className={styles.searchToggle} onClick={() => setDesktopSearchOpen(true)}>
                 <FaSearch />
               </button>
             </div>
           ) : (
-            // Full-navbar search overlay on desktop:
             <div className={styles.desktopSearchOverlay}>
               <form className={styles.desktopSearchForm} onSubmit={handleSearch}>
                 <input
