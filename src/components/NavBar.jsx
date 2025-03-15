@@ -33,6 +33,9 @@ const Navbar = () => {
       ? fetchedData.results
       : fetchedData || [];
 
+  // Filter to only get parent (top-level) categories
+  const parentCategories = categories.filter((category) => !category.parent);
+
   // Detect mobile/desktop based on window width
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -70,9 +73,7 @@ const Navbar = () => {
   };
 
   // Updated: Redirect to SEO-friendly category page using a slug for the subcategory.
-  // Instead of passing an ID, we generate (or use an existing) slug from the subcategory name.
   const selectSubcategory = (subcategory) => {
-    // Use existing slug if available; otherwise generate one.
     const subcategorySlug = subcategory.slug || slugify(subcategory.name);
     router.push(`/category/${subcategorySlug}`);
     if (isMobile) setActiveCategory(null);
@@ -123,7 +124,7 @@ const Navbar = () => {
       </div>
 
       {isMobile ? (
-        // Mobile layout remains unchanged.
+        // Mobile layout
         menuOpen && (
           <div className={`${styles.navbarMenu} ${menuOpen ? styles.navbarMenuActive : ""}`} ref={dropdownRef}>
             <form className={styles.navbarSearch} onSubmit={handleSearch}>
@@ -146,7 +147,7 @@ const Navbar = () => {
               </a>
             </Link>
             {!isLoading &&
-              categories.map((category) => (
+              parentCategories.map((category) => (
                 <div key={category.id} className={styles.hasDropdown}>
                   <button className={styles.dropdownToggle} onClick={() => handleCategoryClick(category.id)}>
                     {category.name} <FaChevronDown />
@@ -187,7 +188,7 @@ const Navbar = () => {
                 <a className={styles.navbarItem}>Home</a>
               </Link>
               {!isLoading &&
-                categories.map((category) => (
+                parentCategories.map((category) => (
                   <div
                     key={category.id}
                     className={styles.hasDropdown}
