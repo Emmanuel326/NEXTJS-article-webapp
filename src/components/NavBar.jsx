@@ -34,10 +34,8 @@ const Navbar = () => {
       : fetchedData || [];
 
   // Filter to only get parent (top-level) categories.
-  // We assume that for top-level categories, the parent property is exactly null.
-  const parentCategories = categories.filter(
-    (category) => category.parent === null
-  );
+  // Using '==' to check for null (which catches both null and undefined)
+  const parentCategories = categories.filter(category => category.parent == null);
 
   // Detect mobile/desktop based on window width
   useEffect(() => {
@@ -47,7 +45,7 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Toggle dark mode (affects entire site if global CSS is set)
+  // Toggle dark mode
   const toggleDarkMode = useCallback(() => {
     setDarkMode((prev) => !prev);
     document.body.classList.toggle("dark-mode");
@@ -127,7 +125,7 @@ const Navbar = () => {
       </div>
 
       {isMobile ? (
-        // Mobile layout
+        // Mobile layout:
         menuOpen && (
           <div className={`${styles.navbarMenu} ${menuOpen ? styles.navbarMenuActive : ""}`} ref={dropdownRef}>
             <form className={styles.navbarSearch} onSubmit={handleSearch}>
