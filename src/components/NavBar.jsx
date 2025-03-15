@@ -33,8 +33,11 @@ const Navbar = () => {
       ? fetchedData.results
       : fetchedData || [];
 
-  // Filter to only get parent (top-level) categories
-  const parentCategories = categories.filter((category) => !category.parent);
+  // Filter to only get parent (top-level) categories.
+  // We assume that for top-level categories, the parent property is exactly null.
+  const parentCategories = categories.filter(
+    (category) => category.parent === null
+  );
 
   // Detect mobile/desktop based on window width
   useEffect(() => {
@@ -72,7 +75,7 @@ const Navbar = () => {
     }
   };
 
-  // Updated: Redirect to SEO-friendly category page using a slug for the subcategory.
+  // Redirect to SEO-friendly category page using a slug for the subcategory.
   const selectSubcategory = (subcategory) => {
     const subcategorySlug = subcategory.slug || slugify(subcategory.name);
     router.push(`/category/${subcategorySlug}`);
