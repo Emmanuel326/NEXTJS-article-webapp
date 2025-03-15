@@ -26,21 +26,26 @@ const Navbar = () => {
   const router = useRouter();
   const dropdownRef = useRef(null);
 
-  // Fetch categories; assume API returns { results: [...] }
-  const { data: fetchedData, isLoading, mutate } = useFetchCategories();
-  // Force a fresh fetch on component mount (in case of stale data)
-  useEffect(() => {
-    if (mutate) mutate();
-  }, [mutate]);
-
+  // Fetch categories; adapt for JSON structure with "results"
+  const { data: fetchedData, isLoading } = useFetchCategories();
   const categories =
     !isLoading && fetchedData && fetchedData.results
       ? fetchedData.results
-      : [];
+      : fetchedData || [];
 
-  // Filter to only get parent (top-level) categories (where parent is null)
+  // Identify IDs of categories that appear as subcategories.
+  const subcategoryIds = new Set();
+  categories.forEach((cat) => {
+    if (cat.subcategories && cat.subcategories.length > 0) {
+      cat.subcategories.forEach((sub) => {
+        subcategoryIds.add(sub.id);
+      });
+    }
+  });
+
+  // Filter out any category that is also a subcategory
   const parentCategories = categories.filter(
-    (category) => category.parent == null
+    (category) => !subcategoryIds.has(category.id)
   );
 
   // Detect mobile/desktop based on window width
@@ -73,14 +78,13 @@ const Navbar = () => {
       setActiveCategory(categoryId);
     }
   };
-
   const handleCategoryMouseLeave = () => {
     if (!isMobile) {
       setActiveCategory(null);
     }
   };
 
-  // Redirect to SEO-friendly category page using subcategory slug
+  // Redirect to SEO-friendly category page using a slug for the subcategory.
   const selectSubcategory = (subcategory) => {
     const subcategorySlug = subcategory.slug || slugify(subcategory.name);
     router.push(`/category/${subcategorySlug}`);
@@ -132,7 +136,7 @@ const Navbar = () => {
       </div>
 
       {isMobile ? (
-        // Mobile layout
+        // Mobile layout:
         menuOpen && (
           <div className={`${styles.navbarMenu} ${menuOpen ? styles.navbarMenuActive : ""}`} ref={dropdownRef}>
             <form className={styles.navbarSearch} onSubmit={handleSearch}>
@@ -161,7 +165,11 @@ const Navbar = () => {
                   {activeCategory === parent.id && parent.subcategories?.length > 0 && (
                     <div className={styles.dropdownMenu}>
                       {parent.subcategories.map((sub) => (
-                        <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
+                        <button
+                          key={sub.id}
+                          className={styles.dropdownItem}
+                          onClick={() => selectSubcategory(sub)}
+                        >
                           {sub.name}
                         </button>
                       ))}
@@ -199,7 +207,11 @@ const Navbar = () => {
                     {activeCategory === parent.id && parent.subcategories?.length > 0 && (
                       <div className={`${styles.dropdownMenu} ${styles.dropdownMenuActive}`}>
                         {parent.subcategories.map((sub) => (
-                          <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
+                          <button
+                            key={sub.id}
+                            className={styles.dropdownItem}
+                            onClick={() => selectSubcategory(sub)}
+                          >
                             {sub.name}
                           </button>
                         ))}
