@@ -26,14 +26,14 @@ const Navbar = () => {
   const router = useRouter();
   const dropdownRef = useRef(null);
 
-  // Fetch categories; adapt for JSON structure with "results"
+  // Fetch categories; assume API returns { results: [...] }
   const { data: fetchedData, isLoading } = useFetchCategories();
   const categories =
     !isLoading && fetchedData && fetchedData.results
       ? fetchedData.results
-      : fetchedData || [];
+      : [];
 
-  // Identify IDs of categories that appear as subcategories.
+  // Compute IDs of all categories that appear as subcategories.
   const subcategoryIds = new Set();
   categories.forEach((cat) => {
     if (cat.subcategories && cat.subcategories.length > 0) {
@@ -43,9 +43,9 @@ const Navbar = () => {
     }
   });
 
-  // Filter out any category that is also a subcategory
+  // Filter out categories that are also subcategories.
   const parentCategories = categories.filter(
-    (category) => !subcategoryIds.has(category.id)
+    (cat) => !subcategoryIds.has(cat.id)
   );
 
   // Detect mobile/desktop based on window width
@@ -165,11 +165,7 @@ const Navbar = () => {
                   {activeCategory === parent.id && parent.subcategories?.length > 0 && (
                     <div className={styles.dropdownMenu}>
                       {parent.subcategories.map((sub) => (
-                        <button
-                          key={sub.id}
-                          className={styles.dropdownItem}
-                          onClick={() => selectSubcategory(sub)}
-                        >
+                        <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
                           {sub.name}
                         </button>
                       ))}
@@ -207,11 +203,7 @@ const Navbar = () => {
                     {activeCategory === parent.id && parent.subcategories?.length > 0 && (
                       <div className={`${styles.dropdownMenu} ${styles.dropdownMenuActive}`}>
                         {parent.subcategories.map((sub) => (
-                          <button
-                            key={sub.id}
-                            className={styles.dropdownItem}
-                            onClick={() => selectSubcategory(sub)}
-                          >
+                          <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
                             {sub.name}
                           </button>
                         ))}
