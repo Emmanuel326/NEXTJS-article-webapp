@@ -1,22 +1,14 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.fynanceguide.site/api/';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/";
 
-console.log("API Base URL:", API_URL);
-
-// Utility function to handle API requests
 const fetchData = async (endpoint, params = {}) => {
   try {
     const url = `${API_URL}${endpoint}/`;
-    console.log(`Fetching: ${url} with params:`, params);
-
     const response = await axios.get(url, { params });
-
-    console.log(`Response from ${endpoint}:`, response.status, response.data);
     if (!response.data) {
       throw new Error("Invalid data structure received");
     }
-
     return response.data;
   } catch (error) {
     console.error(`Error fetching ${endpoint}:`, error?.response?.status, error?.message);
@@ -24,59 +16,41 @@ const fetchData = async (endpoint, params = {}) => {
   }
 };
 
-// Fetch all categories and their subcategories
 export const fetchCategories = async () => {
-  console.log("Fetching categories and subcategories...");
   const result = await fetchData("categories");
-  console.log("Categories fetch result:", result);
-
-  // Handle the paginated response structure if needed (count, next, previous, results)
   if (result && result.results && Array.isArray(result.results)) {
-    return result.results.map(category => ({
+    return result.results.map((category) => ({
       ...category,
-      subcategories: category.subcategories || []  // Ensure subcategories is always an array
+      subcategories: category.subcategories || [],
     }));
   }
   return [];
 };
 
-// Fetch all blogs (supports pagination & category filtering)
 export const fetchBlogs = async ({ page = 1, limit = 10, categoryId = null } = {}) => {
-  const endpoint = categoryId ? `categories/${categoryId}/articles` : "articles";
+  const endpoint = "articles";
   const params = { page, limit };
-  console.log("Fetching blogs with params:", params);
+  if (categoryId) {
+    params.category = categoryId;
+  }
   const result = await fetchData(endpoint, params);
-  console.log("Blogs fetch result:", result);
-  // Ensure a consistent shape: if result is an array, wrap it in an object with a results property.
   return Array.isArray(result) ? { results: result } : result;
 };
 
-// Fetch a single blog by ID
 export const fetchBlogById = async (id) => {
-  console.log(`Fetching blog by ID: ${id}`);
   const result = await fetchData(`articles/${id}`);
-  console.log(`Blog ${id} fetch result:`, result);
   return result;
 };
 
-// Fetch a single blog by slug
 export const fetchBlogBySlug = async (slug) => {
-  console.log(`Fetching blog by slug: ${slug}`);
-  // Assuming your API supports a "slug" endpoint for articles, e.g., articles/slug/{slug}/
   const result = await fetchData(`articles/slug/${slug}`);
-  console.log(`Blog with slug ${slug} fetch result:`, result);
   return result;
 };
 
-// Fetch all articles (non-paginated, for admin usage)
 export const fetchAllArticles = async () => {
   try {
     const url = `${API_URL}articles/`;
-    console.log(`Fetching all articles from: ${url}`);
-    
     const response = await axios.get(url, { params: { limit: 1000 } });
-    
-    console.log("All articles fetch response:", response.status, response.data);
     return response.data.results || response.data;
   } catch (error) {
     console.error("Error fetching all articles:", error?.response?.status, error?.message);
@@ -84,15 +58,10 @@ export const fetchAllArticles = async () => {
   }
 };
 
-// Create an article (POST request)
 export const createArticle = async (articleData) => {
   try {
     const url = `${API_URL}articles/`;
-    console.log("Creating article at:", url, "with data:", articleData);
-
     const response = await axios.post(url, articleData);
-    
-    console.log("Article created successfully:", response.status, response.data);
     return response.data;
   } catch (error) {
     console.error("Error creating article:", error?.response?.status, error?.message);
@@ -100,20 +69,12 @@ export const createArticle = async (articleData) => {
   }
 };
 
-// Fetch top stories (endpoint: top-stories)
-// Returns articles marked as top stories (is_featured) and published.
 export const fetchTopStories = async () => {
-  console.log("Fetching top stories...");
   const result = await fetchData("top-stories");
-  console.log("Top stories fetch result:", result);
   return result;
 };
 
-// Fetch recommended article (endpoint: recommended)
-// Returns articles marked as recommended (is_recommended) and published.
 export const fetchRecommended = async () => {
-  console.log("Fetching recommended article...");
   const result = await fetchData("recommended");
-  console.log("Recommended article fetch result:", result);
   return result;
 };

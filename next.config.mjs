@@ -17,6 +17,10 @@ const nextConfig = {
       },
     ],
   },
+  compiler: {
+    // This will remove all console statements in production builds
+    removeConsole: process.env.NODE_ENV === "production",
+  },
 };
 
 export default nextConfig;

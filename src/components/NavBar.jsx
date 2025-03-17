@@ -17,29 +17,24 @@ const slugify = (text) =>
     .replace(/\-\-+/g, "-");
 
 const Navbar = () => {
+  const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(null);
+  // activeDropdown stores the ID of the parent category whose dropdown is visible.
+  const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(false);
-  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
-  const router = useRouter();
-  const dropdownRef = useRef(null);
+  const navbarRef = useRef(null);
 
-  // Fetch categories
-  const { data: fetchedData, isLoading } = useFetchCategories();
-  const categories = fetchedData?.results || [];
+  // Fetch parent categories (each including their subcategories)
+  const { data: categories, isLoading, error } = useFetchCategories();
 
-  // Compute subcategory IDs and filter parent categories
-  const subcategoryIds = new Set(categories.flatMap((cat) => cat.subcategories?.map((sub) => sub.id) || []));
-  const parentCategories = categories.filter((cat) => !subcategoryIds.has(cat.id));
-
-  // Handle window resize for mobile detection
+  // Detect mobile viewport size
   useEffect(() => {
-    const updateMobileView = () => setIsMobile(window.innerWidth < 768);
-    updateMobileView();
-    window.addEventListener("resize", updateMobileView);
-    return () => window.removeEventListener("resize", updateMobileView);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Toggle dark mode
@@ -48,31 +43,20 @@ const Navbar = () => {
     document.body.classList.toggle("dark-mode");
   }, []);
 
-  // Toggle menu
+  // Toggle mobile menu open/close
   const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
 
-  // Handle category selection
-  const handleCategoryClick = (categoryId) => {
-    setActiveCategory((prev) => (prev === categoryId ? null : categoryId));
+  // Toggle dropdown for a given parent category (by its ID)
+  const toggleDropdown = (catId) => {
+    setActiveDropdown((prev) => (prev === catId ? null : catId));
   };
 
-  // Redirect to subcategory page
-  const selectSubcategory = (subcategory) => {
-    router.push(`/category/${subcategory.slug || slugify(subcategory.name)}`);
-    setActiveCategory(null);
+  // Navigate to subcategory page using its slug (or generated slug)
+  const handleNavigation = (category) => {
+    router.push(`/category/${category.slug || slugify(category.name)}`);
     setMenuOpen(false);
+    setActiveDropdown(null);
   };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setActiveCategory(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   // Handle search submission
   const handleSearch = (e) => {
@@ -81,12 +65,23 @@ const Navbar = () => {
       router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
       setSearchQuery("");
       setMenuOpen(false);
-      setDesktopSearchOpen(false);
+      setActiveDropdown(null);
     }
   };
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading categories.</div>;
+
+  // Assuming the API returns only top-level (parent) categories with a nested `subcategories` array.
+  const parentCategories = categories;
+
   return (
-    <nav className={`${styles.navbar} ${darkMode ? styles.navbarDark : styles.navbarLight}`}>
+    <nav
+      ref={navbarRef}
+      className={`${styles.navbar} ${
+        darkMode ? styles.navbarDark : styles.navbarLight
+      }`}
+    >
       <div className={styles.navbarBrand}>
         <Link href="/" legacyBehavior>
           <a className={styles.logo}>💰 Fynance Guide</a>
@@ -96,14 +91,16 @@ const Navbar = () => {
         </button>
         {isMobile && (
           <button className={styles.navbarBurger} onClick={toggleMenu}>
-            <span></span><span></span><span></span>
+            <span></span>
+            <span></span>
+            <span></span>
           </button>
         )}
       </div>
 
       {isMobile ? (
         menuOpen && (
-          <div className={`${styles.navbarMenu} ${menuOpen ? styles.navbarMenuActive : ""}`} ref={dropdownRef}>
+          <div className={`${styles.navbarMenu} ${styles.navbarMenuActive}`}>
             <form className={styles.navbarSearch} onSubmit={handleSearch}>
               <input
                 type="text"
@@ -116,52 +113,122 @@ const Navbar = () => {
                 <FaSearch />
               </button>
             </form>
+            {/* Static links */}
             <Link href="/" legacyBehavior>
-              <a className={styles.navbarItem} onClick={() => setMenuOpen(false)}>
+              <a
+                className={styles.navbarItem}
+                onClick={() => setMenuOpen(false)}
+              >
                 Home
               </a>
             </Link>
-            {!isLoading &&
-              parentCategories.map((parent) => (
-                <div key={parent.id} className={styles.hasDropdown}>
-                  <button className={styles.dropdownToggle} onClick={() => handleCategoryClick(parent.id)}>
+            <Link href="/about" legacyBehavior>
+              <a
+                className={styles.navbarItem}
+                onClick={() => setMenuOpen(false)}
+              >
+                About
+              </a>
+            </Link>
+            <Link href="/contact" legacyBehavior>
+              <a
+                className={styles.navbarItem}
+                onClick={() => setMenuOpen(false)}
+              >
+                Contact
+              </a>
+            </Link>
+            {/* Dynamic categories */}
+            {parentCategories.map((parent) => (
+              <div key={parent.id} className={styles.hasDropdown}>
+                {parent.subcategories && parent.subcategories.length > 0 ? (
+                  <>
+                    <button
+                      className={styles.dropdownToggle}
+                      onClick={() => toggleDropdown(parent.id)}
+                    >
+                      {parent.name} <FaChevronDown />
+                    </button>
+                    {activeDropdown === parent.id && (
+                      <div className={styles.dropdownMenu}>
+                        {parent.subcategories.map((sub) => (
+                          <button
+                            key={sub.id}
+                            className={styles.dropdownItem}
+                            onClick={() => handleNavigation(sub)}
+                          >
+                            {sub.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    className={styles.navbarItem}
+                    onClick={() => handleNavigation(parent)}
+                  >
+                    {parent.name}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      ) : (
+        <div className={styles.navbarMenu}>
+          {/* Static links */}
+          <Link href="/" legacyBehavior>
+            <a className={styles.navbarItem}>Home</a>
+          </Link>
+          <Link href="/about" legacyBehavior>
+            <a className={styles.navbarItem}>About</a>
+          </Link>
+          <Link href="/contact" legacyBehavior>
+            <a className={styles.navbarItem}>Contact</a>
+          </Link>
+          {/* Dynamic categories */}
+          {parentCategories.map((parent) => (
+            <div
+              key={parent.id}
+              className={styles.hasDropdown}
+              onMouseLeave={() => setActiveDropdown(null)}
+            >
+              {parent.subcategories && parent.subcategories.length > 0 ? (
+                <>
+                  <button
+                    className={styles.dropdownToggle}
+                    onMouseEnter={() => setActiveDropdown(parent.id)}
+                  >
                     {parent.name} <FaChevronDown />
                   </button>
-                  {activeCategory === parent.id && parent.subcategories?.length > 0 && (
-                    <div className={styles.dropdownMenu}>
+                  {activeDropdown === parent.id && (
+                    <div
+                      className={`${styles.dropdownMenu} ${styles.dropdownMenuActive}`}
+                      onMouseEnter={() => setActiveDropdown(parent.id)}
+                    >
                       {parent.subcategories.map((sub) => (
-                        <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
+                        <button
+                          key={sub.id}
+                          className={styles.dropdownItem}
+                          onClick={() => handleNavigation(sub)}
+                        >
                           {sub.name}
                         </button>
                       ))}
                     </div>
                   )}
-                </div>
-              ))}
-          </div>
-        )
-      ) : (
-        <div className={styles.navbarMenu} ref={dropdownRef}>
-          <Link href="/" legacyBehavior>
-            <a className={styles.navbarItem}>Home</a>
-          </Link>
-          {!isLoading &&
-            parentCategories.map((parent) => (
-              <div key={parent.id} className={styles.hasDropdown}>
-                <button className={styles.dropdownToggle} onMouseEnter={() => setActiveCategory(parent.id)}>
-                  {parent.name} <FaChevronDown />
+                </>
+              ) : (
+                <button
+                  className={styles.navbarItem}
+                  onClick={() => handleNavigation(parent)}
+                >
+                  {parent.name}
                 </button>
-                {activeCategory === parent.id && parent.subcategories?.length > 0 && (
-                  <div className={styles.dropdownMenu}>
-                    {parent.subcategories.map((sub) => (
-                      <button key={sub.id} className={styles.dropdownItem} onClick={() => selectSubcategory(sub)}>
-                        {sub.name}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+              )}
+            </div>
+          ))}
         </div>
       )}
     </nav>

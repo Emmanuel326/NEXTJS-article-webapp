@@ -8,39 +8,38 @@ import Head from "next/head";
 import styles from "../../styles/category.module.css";
 
 const Category = () => {
-  // Updated: Use categorySlug from params (dynamic route file is [categorySlug].jsx)
   const params = useParams();
   const slugOrId = params?.categorySlug || "";
-
-  // Determine if the parameter is numeric
   const isNumeric = !isNaN(Number(slugOrId));
 
-  // If not numeric, fetch categories to map the slug to its numeric ID
-  const {
-    data: categories,
-    isLoading: catLoading,
-    error: catError,
-  } = useQuery({
+  // Fetch categories if needed (to map a slug to a numeric ID)
+  const { data: categories, isLoading: catLoading, error: catError } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
-    enabled: !isNumeric, // Only fetch categories if we need to map a slug
+    enabled: !isNumeric,
   });
 
-  // Default to using slugOrId as the numericId.
-  // If the slug is not numeric, try to map it to a category's ID.
   let numericId = slugOrId;
   if (!isNumeric && categories) {
-    const matchedCategory = categories.find((cat) => {
-      // Convert category name to a slug for comparison.
+    let matchedCategory = categories.find((cat) => {
       const categorySlug = cat.name.toLowerCase().replace(/\s+/g, "-");
       return categorySlug === slugOrId.toLowerCase();
     });
+    if (!matchedCategory) {
+      for (const parent of categories) {
+        matchedCategory = parent.subcategories.find((sub) => {
+          const subSlug = sub.name.toLowerCase().replace(/\s+/g, "-");
+          return subSlug === slugOrId.toLowerCase();
+        });
+        if (matchedCategory) break;
+      }
+    }
     if (matchedCategory) {
       numericId = matchedCategory.id;
     }
   }
 
-  // Fetch blogs using the resolved numeric ID.
+  // Fetch blogs using the resolved numeric ID as a query parameter
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["blogs", numericId],
     queryFn: () => fetchBlogs({ categoryId: numericId }),
@@ -49,15 +48,11 @@ const Category = () => {
     retry: 2,
   });
 
-  // Ensure blogs is always an array.
   const blogs = Array.isArray(data) ? data : data?.results || [];
-
-  // For display/SEO, if the URL is a slug, use it to generate a readable title.
   const readableCategory = isNumeric ? slugOrId : slugOrId.replace(/-/g, " ").toUpperCase();
   const pageTitle = `Category: ${readableCategory} | My Blog`;
   const pageDescription = `Explore the latest articles in the ${readableCategory} category. Stay updated with trending blogs.`;
 
-  // JSON-LD Structured Data for SEO
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -84,25 +79,19 @@ const Category = () => {
         <meta name="description" content={pageDescription} />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
-        <meta property="og:url" content={`https://fynanceguide.site/category/${slugOrId}`} />
+        <meta property="og:url" content={`https://yourwebsite.com/category/${slugOrId}`} />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </Head>
 
       <section className={`${styles.section} ${styles.category}`}>
         <div className={styles.container}>
           <h1 className={styles.title}>Category: {readableCategory}</h1>
-
           {isLoading || isFetching || catLoading ? (
             <p className={styles.centerText}>Loading blogs...</p>
           ) : error || catError ? (
-            <p className={styles.errorText}>
-              Error: {error?.message || catError?.message}
-            </p>
+            <p className={styles.errorText}>Error: {error?.message || catError?.message}</p>
           ) : blogs.length > 0 ? (
             <div className={styles.columns}>
               {blogs.map((blog) => (

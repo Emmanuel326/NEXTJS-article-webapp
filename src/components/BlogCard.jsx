@@ -6,7 +6,6 @@ import styles from "../styles/BlogCard.module.css";
 
 const BlogCard = ({ article }) => {
   if (!article) {
-    console.warn("No article data available.");
     return (
       <div className={`${styles.notification} ${styles.warning}`}>
         No article data available
@@ -25,14 +24,10 @@ const BlogCard = ({ article }) => {
     : "📅 Unknown Date";
 
   // Use category-based routing
-  let articleSlug = `/category/${article.category?.slug || "uncategorized"}/${article.slug}`;
-
-  // Debugging logs
-  console.log("Rendering BlogCard for:", article.title);
-  console.log("Article Slug:", articleSlug);
+  const articleSlug = `/category/${article.category?.slug || "uncategorized"}/${article.slug}`;
 
   const handleClick = () => {
-    console.log(`BlogCard clicked! Navigating to: ${articleSlug}`);
+    // No logging here; navigation will occur via Link component.
   };
 
   return (

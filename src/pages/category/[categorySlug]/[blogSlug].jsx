@@ -51,7 +51,8 @@ const BlogDetails = () => {
     );
   }
 
-  const article = data || {};
+  // Extract the actual article data from the API response.
+  const article = data?.data || {};
 
   if (!article.title) {
     return (
@@ -88,7 +89,7 @@ const BlogDetails = () => {
       },
     },
     "datePublished": article.publishedAt || new Date().toISOString(),
-    "dateModified": article.updatedAt || new Date().toISOString(),
+    "dateModified": article.updatedAt || article.publishedAt || new Date().toISOString(),
     "url": pageUrl,
   };
 
@@ -118,7 +119,13 @@ const BlogDetails = () => {
             />
           </figure>
           <div className={styles.content}>
-            <p>{article.content || "No content available for this article."}</p>
+            <div
+              dangerouslySetInnerHTML={{
+                __html:
+                  article.content ||
+                  "<p>No content available for this article.</p>",
+              }}
+            />
           </div>
         </div>
       </section>
