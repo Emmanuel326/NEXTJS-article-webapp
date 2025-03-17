@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://www.fynanceguide.site
+Host: https://fynanceguide.site
 
 # Sitemaps
-Sitemap: https://www.fynanceguide.site/sitemap.xml
+Sitemap: https://fynanceguide.site/sitemap.xml
