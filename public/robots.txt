@@ -7,7 +7,3 @@ Host: https://www.fynanceguide.site
 
 # Sitemaps
 Sitemap: https://www.fynanceguide.site/sitemap.xml
-
-Disallow: /adminarticlepage
-Disallow: /api
-Sitemap: https://www.fynanceguide.site/sitemap.xml
