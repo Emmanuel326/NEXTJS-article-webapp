@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /adminarticlepage
-Disallow: /api
-Sitemap: https://www.fynanceguide.site/sitemap.xml
