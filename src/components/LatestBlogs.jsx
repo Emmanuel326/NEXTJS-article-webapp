@@ -1,10 +1,34 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchBlogs } from "../services/api";
 import BlogCard from "../components/BlogCard";
 import styles from "../styles/latestBlogs.module.css";
+
+// Debounced window width hook
+function useDebouncedWindowWidth(delay = 200) {
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 0
+  );
+
+  useEffect(() => {
+    let timeoutId = null;
+
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setWidth(window.innerWidth);
+      }, delay);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [delay]);
+
+  return width;
+}
 
 const LatestBlogs = () => {
   // Fetch blogs using React Query
@@ -14,33 +38,34 @@ const LatestBlogs = () => {
     staleTime: 300000, // Cache for 5 minutes
   });
 
-  // Ensure blogs is always an array
-  const blogs = Array.isArray(data) ? data : data?.results || [];
+  // Memoize blogs to avoid unnecessary recalculations
+  const blogs = useMemo(() => {
+    return Array.isArray(data) ? data : data?.results || [];
+  }, [data]);
 
-  // Track window width for responsive design
-  const [windowWidth, setWindowWidth] = useState(0);
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    setWindowWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // Track window width using debounced custom hook
+  const windowWidth = useDebouncedWindowWidth(200);
+  const isDesktop = useMemo(() => windowWidth >= 1024, [windowWidth]);
 
-  // Define breakpoint for desktop
-  const isDesktop = windowWidth >= 1024;
-
-  // ✅ Pagination Setup (10 per page)
+  // Pagination setup (10 per page)
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(blogs.length / itemsPerPage);
+  const totalPages = useMemo(() => Math.ceil(blogs.length / itemsPerPage), [blogs]);
 
   // Get current blogs for the page
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentArticles = blogs.slice(startIndex, startIndex + itemsPerPage);
+  const currentArticles = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return blogs.slice(startIndex, startIndex + itemsPerPage);
+  }, [blogs, currentPage, itemsPerPage]);
 
-  // Pagination controls
-  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  // Pagination controls wrapped in useCallback for optimization
+  const handlePrevPage = useCallback(() => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  }, []);
+
+  const handleNextPage = useCallback(() => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  }, [totalPages]);
 
   // Reset to first page when blogs change
   useEffect(() => {
@@ -63,7 +88,7 @@ const LatestBlogs = () => {
         ))}
       </div>
 
-      {/* ✅ Pagination Buttons */}
+      {/* Pagination Buttons */}
       {totalPages > 1 && (
         <div className={styles.pagination} style={{ textAlign: "center", marginTop: "20px" }}>
           <button onClick={handlePrevPage} disabled={currentPage === 1}>

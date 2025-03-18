@@ -7,6 +7,7 @@ import { FaSearch, FaMoon, FaSun, FaChevronDown } from "react-icons/fa";
 import useFetchCategories from "../hooks/useFetchCategories";
 import styles from "../styles/navbar.module.css";
 
+// Utility to generate a slug from text
 const slugify = (text) =>
   text
     .toLowerCase()
@@ -26,6 +27,7 @@ const Navbar = () => {
 
   const { data: categories, isLoading, error } = useFetchCategories();
 
+  // Replace this with a debounced custom hook for better performance if needed.
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     setIsMobile(window.innerWidth < 768);
@@ -33,44 +35,54 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Toggle dark mode
   const toggleDarkMode = useCallback(() => {
     setDarkMode((prev) => !prev);
     document.body.classList.toggle("dark-mode");
   }, []);
 
+  // Toggle mobile menu open/close
   const toggleMenu = useCallback(() => setMenuOpen((prev) => !prev), []);
 
-  const toggleDropdown = (catId) => {
+  // Toggle dropdown for a given parent category
+  const toggleDropdown = useCallback((catId) => {
     setActiveDropdown((prev) => (prev === catId ? null : catId));
-  };
+  }, []);
 
-  const handleNavigation = (category) => {
-    router.push(`/category/${category.slug || slugify(category.name)}`);
-    setMenuOpen(false);
-    setActiveDropdown(null);
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery("");
+  // Navigate to a category or subcategory page
+  const handleNavigation = useCallback(
+    (category) => {
+      router.push(`/category/${category.slug || slugify(category.name)}`);
       setMenuOpen(false);
       setActiveDropdown(null);
-    }
-  };
+    },
+    [router]
+  );
+
+  // Handle search submission
+  const handleSearch = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+        setSearchQuery("");
+        setMenuOpen(false);
+        setActiveDropdown(null);
+      }
+    },
+    [router, searchQuery]
+  );
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading categories.</div>;
 
+  // Categories from hook (assumed to be an array)
   const parentCategories = categories;
 
   return (
     <nav
       ref={navbarRef}
-      className={`${styles.navbar} ${
-        darkMode ? styles.navbarDark : styles.navbarLight
-      }`}
+      className={`${styles.navbar} ${darkMode ? styles.navbarDark : styles.navbarLight}`}
     >
       <div className={styles.navbarBrand}>
         <Link href="/" legacyBehavior>
@@ -128,10 +140,7 @@ const Navbar = () => {
                     )}
                   </>
                 ) : (
-                  <button
-                    className={styles.navbarItem}
-                    onClick={() => handleNavigation(parent)}
-                  >
+                  <button className={styles.navbarItem} onClick={() => handleNavigation(parent)}>
                     {parent.name}
                   </button>
                 )}
@@ -182,6 +191,18 @@ const Navbar = () => {
               )}
             </div>
           ))}
+          <form className={styles.navbarSearch} onSubmit={handleSearch}>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="submit" className={styles.searchIcon}>
+              <FaSearch />
+            </button>
+          </form>
         </div>
       )}
     </nav>

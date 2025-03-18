@@ -4,7 +4,7 @@ import Image from "next/image";
 import PropTypes from "prop-types";
 import styles from "../styles/BlogCard.module.css";
 
-const BlogCard = ({ article }) => {
+const BlogCard = ({ article, priority = false }) => {
   if (!article) {
     return (
       <div className={`${styles.notification} ${styles.warning}`}>
@@ -13,8 +13,10 @@ const BlogCard = ({ article }) => {
     );
   }
 
+  // Use provided image URL or fallback to a default image
   const imageUrl = article.image?.trim() ? article.image : "/default-blog.jpg";
 
+  // Format date for display
   const formattedDate = article.created_at
     ? new Date(article.created_at).toLocaleDateString("en-US", {
         year: "numeric",
@@ -23,15 +25,11 @@ const BlogCard = ({ article }) => {
       })
     : "📅 Unknown Date";
 
-  // Use category-based routing
+  // Construct URL based on article category and slug
   const articleSlug = `/category/${article.category?.slug || "uncategorized"}/${article.slug}`;
 
-  const handleClick = () => {
-    // No logging here; navigation will occur via Link component.
-  };
-
   return (
-    <div className={styles.blogCard} onClick={handleClick}>
+    <div className={styles.blogCard}>
       <Link href={articleSlug} legacyBehavior>
         <a className={styles.link}>
           <div className={styles.blogCardImage}>
@@ -41,9 +39,11 @@ const BlogCard = ({ article }) => {
                 alt={article.title ? `Cover image for ${article.title}` : "Blog Image"}
                 width={400}
                 height={250}
+                layout="responsive"
                 className={styles.image}
-                loading="lazy"
-                priority={false}
+                placeholder="blur"
+                blurDataURL="/default-blur.jpg" // Low-quality placeholder image
+                priority={priority} // Optionally mark as priority if above-the-fold
               />
             </figure>
           </div>
@@ -78,6 +78,7 @@ BlogCard.propTypes = {
       slug: PropTypes.string,
     }),
   }).isRequired,
+  priority: PropTypes.bool, // Optional prop to flag critical images for LCP
 };
 
 export default BlogCard;

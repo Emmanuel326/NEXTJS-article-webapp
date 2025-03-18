@@ -1,29 +1,30 @@
 /* ====== Global Variables & Reset ====== */
 :root {
   --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --background-color: #ffffff;  /* Light mode: white background */
-  --text-color: #333333;        /* Light mode: dark text */
+  --background-color: #ffffff;  /* Default light mode background */
+  --text-color: #333333;        /* Default dark text */
   --primary-color: #007bff;
   --border-color: #ccc;
+  --link-color: #007bff;
   --link-hover-color: #0056b3;
   --max-width: 1200px;
-  --dark-link-color: #66aaff;   /* New variable for dark mode links */
+  --dark-bg: #121212;          /* Dark mode background */
+  --dark-text: #e0e0e0;        /* Dark mode text */
+  --dark-border: #555;
+  --dark-link-color: #66aaff;
 }
 
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ====== Base Styles - Mobile First ====== */
+/* ====== Base Styles - Light Mode Default ====== */
 body {
   font-family: var(--font-family);
   background-color: var(--background-color);
   color: var(--text-color);
-  line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -35,46 +36,10 @@ body {
   padding: 0 16px;
 }
 
-/* ====== Featured Blogs Wrapper ====== */
-.featured-blogs {
-  width: 100%;
-  background: transparent;
-  padding: 0;
-  border: none;
-  box-shadow: none;
-}
-
-/* ====== Blogs Container: Flexible Grid (auto-fit) ====== */
-.blogs-container {
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
-/* ====== Tablet and Larger Screens ====== */
-@media (min-width: 768px) {
-  .blogs-container {
-    gap: 24px;
-  }
-}
-
-/* ====== Global Dark Mode Overrides ====== */
-body.dark-mode {
-  --background-color: #222222;  /* Dark mode background */
-  --text-color: #ffffff;
-  --border-color: #555;
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-body.dark-mode a {
-  color: var(--dark-link-color);  /* Use dedicated dark mode link color */
-}
-
 /* ====== Blog Cards Grid Container ====== */
 .blog-cards-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
   margin: 16px auto;
   max-width: var(--max-width);
@@ -83,7 +48,33 @@ body.dark-mode a {
   border-radius: 8px;
 }
 
-/* ====== Pagination Controls ====== */
+/* ====== Dark Mode Styling ====== */
+body.dark-mode {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+/* Ensure all elements properly transition */
+body.dark-mode * {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode specific styles */
+body.dark-mode .container,
+body.dark-mode .blog-cards-container {
+  background-color: var(--dark-bg);
+  border-color: var(--dark-border);
+}
+
+body.dark-mode a {
+  color: var(--dark-link-color);  /* Ensure links remain visible */
+}
+
+body.dark-mode .pagination button {
+  background-color: var(--dark-border);
+}
+
+/* Pagination Controls */
 .pagination {
   display: flex;
   justify-content: center;
@@ -111,13 +102,11 @@ body.dark-mode a {
   cursor: not-allowed;
 }
 
-/* ====== Additional Dark Mode Overrides for Specific Elements ====== */
-body.dark-mode .sidebar {
-  background-color: #444;
-  border: 1px solid var(--border-color);
+/* Ensure sidebar, blog cards, and other sections match the theme */
+body.dark-mode .sidebar,
+body.dark-mode .blogCard {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+  border-color: var(--dark-border);
 }
 
-body.dark-mode .blogCard {
-  background-color: #444;
-  color: var(--text-color);
-}
