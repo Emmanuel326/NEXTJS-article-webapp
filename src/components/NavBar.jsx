@@ -23,11 +23,12 @@ const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false); // New state for desktop search overlay
   const navbarRef = useRef(null);
 
   const { data: categories, isLoading, error } = useFetchCategories();
 
-  // Replace this with a debounced custom hook for better performance if needed.
+  // Responsive check
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     setIsMobile(window.innerWidth < 768);
@@ -68,10 +69,21 @@ const Navbar = () => {
         setSearchQuery("");
         setMenuOpen(false);
         setActiveDropdown(null);
+        setSearchOpen(false); // Close desktop search overlay after search
       }
     },
     [router, searchQuery]
   );
+
+  // Desktop search handlers
+  const openSearch = useCallback(() => {
+    setSearchOpen(true);
+  }, []);
+
+  const closeSearch = useCallback(() => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  }, []);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading categories.</div>;
@@ -149,61 +161,35 @@ const Navbar = () => {
           </div>
         )
       ) : (
-        <div className={styles.navbarMenu}>
-          {parentCategories.map((parent) => (
-            <div
-              key={parent.id}
-              className={styles.hasDropdown}
-              onMouseLeave={() => setActiveDropdown(null)}
-            >
-              {parent.subcategories && parent.subcategories.length > 0 ? (
-                <>
-                  <button
-                    className={styles.dropdownToggle}
-                    onMouseEnter={() => setActiveDropdown(parent.id)}
-                  >
-                    {parent.name} <FaChevronDown />
-                  </button>
-                  {activeDropdown === parent.id && (
-                    <div
-                      className={`${styles.dropdownMenu} ${styles.dropdownMenuActive}`}
-                      onMouseEnter={() => setActiveDropdown(parent.id)}
-                    >
-                      {parent.subcategories.map((sub) => (
-                        <button
-                          key={sub.id}
-                          className={styles.dropdownItem}
-                          onClick={() => handleNavigation(sub)}
-                        >
-                          {sub.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <button
-                  className={styles.navbarItem}
-                  onClick={() => handleNavigation(parent)}
-                >
-                  {parent.name}
+        // Desktop: When searchOpen is false, only the search icon is visible.
+        // When searchOpen is true, the overlay with search input, search and cancel buttons is shown.
+        <>
+          {searchOpen ? (
+            <div className={styles.desktopSearchOverlay}>
+              <form className={styles.desktopSearchForm} onSubmit={handleSearch}>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="Search articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button type="submit" className={styles.searchSubmitButton}>
+                  Search
                 </button>
-              )}
+                <button type="button" className={styles.cancelButton} onClick={closeSearch}>
+                  Cancel
+                </button>
+              </form>
             </div>
-          ))}
-          <form className={styles.navbarSearch} onSubmit={handleSearch}>
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="Search articles..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit" className={styles.searchIcon}>
-              <FaSearch />
-            </button>
-          </form>
-        </div>
+          ) : (
+            <div className={styles.desktopSearch}>
+              <button onClick={openSearch} className={styles.searchToggle}>
+                <FaSearch />
+              </button>
+            </div>
+          )}
+        </>
       )}
     </nav>
   );
