@@ -56,6 +56,7 @@ const Navbar = () => {
       router.push(`/category/${category.slug || slugify(category.name)}`);
       setMenuOpen(false);
       setActiveDropdown(null);
+      setSearchOpen(false); // ensure search overlay is closed
     },
     [router]
   );
@@ -161,10 +162,61 @@ const Navbar = () => {
           </div>
         )
       ) : (
-        // Desktop: When searchOpen is false, only the search icon is visible.
-        // When searchOpen is true, the overlay with search input, search and cancel buttons is shown.
         <>
-          {searchOpen ? (
+          {/* Desktop: Render full navbar by default */}
+          {!searchOpen && (
+            <div className={styles.navbarMenu}>
+              {parentCategories.map((parent) => (
+                <div
+                  key={parent.id}
+                  className={styles.hasDropdown}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                >
+                  {parent.subcategories && parent.subcategories.length > 0 ? (
+                    <>
+                      <button
+                        className={styles.dropdownToggle}
+                        onMouseEnter={() => setActiveDropdown(parent.id)}
+                      >
+                        {parent.name} <FaChevronDown />
+                      </button>
+                      {activeDropdown === parent.id && (
+                        <div
+                          className={`${styles.dropdownMenu} ${styles.dropdownMenuActive}`}
+                          onMouseEnter={() => setActiveDropdown(parent.id)}
+                        >
+                          {parent.subcategories.map((sub) => (
+                            <button
+                              key={sub.id}
+                              className={styles.dropdownItem}
+                              onClick={() => handleNavigation(sub)}
+                            >
+                              {sub.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <button
+                      className={styles.navbarItem}
+                      onClick={() => handleNavigation(parent)}
+                    >
+                      {parent.name}
+                    </button>
+                  )}
+                </div>
+              ))}
+              <div className={styles.desktopSearch}>
+                <button onClick={openSearch} className={styles.searchToggle}>
+                  <FaSearch />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* When searchOpen is true, hide the category links and show the search overlay */}
+          {searchOpen && (
             <div className={styles.desktopSearchOverlay}>
               <form className={styles.desktopSearchForm} onSubmit={handleSearch}>
                 <input
@@ -181,12 +233,6 @@ const Navbar = () => {
                   Cancel
                 </button>
               </form>
-            </div>
-          ) : (
-            <div className={styles.desktopSearch}>
-              <button onClick={openSearch} className={styles.searchToggle}>
-                <FaSearch />
-              </button>
             </div>
           )}
         </>
