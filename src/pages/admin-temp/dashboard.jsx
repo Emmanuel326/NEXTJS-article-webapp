@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import AuthContext from "../../context/AuthContext";
 import AdminSidebar from "../../components/AdminSidebar";
 import AdminLayout from "../../components/AdminLayout";
-import styles from "./dashboard.module.css";
+import styles from "../../styles/dashboard.module.css";
 
 export default function Dashboard() {
   const { user, loading, logout } = useContext(AuthContext);

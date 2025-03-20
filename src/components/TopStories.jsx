@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import styles from "../styles/TopStories.module.css";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.fynanceguide.site/api/";
 
 const fetchTopStories = async () => {
   const response = await fetch(`${API_BASE_URL}top-stories/`);
