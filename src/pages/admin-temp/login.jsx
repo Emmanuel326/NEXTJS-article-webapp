@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useContext, useEffect } from "react";
-import { useRouter } from "next/router"; // Use next/router for pages
+import { useRouter } from "next/router";
 import AuthContext from "../../context/AuthContext";
 import styles from "../../styles/login.module.css";
 
@@ -17,7 +17,6 @@ export default function AdminLogin() {
     await login(username, password);
   };
 
-  // Check for user and redirect only if we're not already on the dashboard.
   useEffect(() => {
     console.log("AdminLogin useEffect: user =", user, "router.pathname =", router.pathname);
     if (user && router.pathname !== "/admin/dashboard") {

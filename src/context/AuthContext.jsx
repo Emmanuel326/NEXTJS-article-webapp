@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useState, useEffect } from "react";
-import { useRouter } from "next/router"; // For Pages-based projects
+import { useRouter } from "next/router";
 import axios from "axios";
 
 // Fallback function to decode JWT manually
@@ -47,6 +47,10 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  // Centralize the API URL and token endpoint here.
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.fynanceguide.site/api/";
+  const tokenEndpoint = `${API_URL}token/`;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -71,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     console.log("Attempting login with username:", username);
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}token/`, // Constructs URL like "http://localhost:8000/api/token/"
+        tokenEndpoint, // Uses the centralized token endpoint
         { username, password }
       );
       console.log("Login successful. Response:", response.data);

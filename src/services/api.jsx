@@ -2,10 +2,12 @@
 
 import axios from "axios";
 
+// Ensure NEXT_PUBLIC_API_URL ends with "/api/"
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.fynanceguide.site/api/";
 
 const fetchData = async (endpoint, params = {}) => {
   try {
+    // endpoint is appended to the base URL
     const url = `${API_URL}${endpoint}/`;
     const response = await axios.get(url, { params });
     if (!response.data) {
