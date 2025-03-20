@@ -1,6 +1,8 @@
+"use client";
+
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.fynanceguide.site/api/";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/";
 
 const fetchData = async (endpoint, params = {}) => {
   try {

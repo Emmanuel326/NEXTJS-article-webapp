@@ -5,6 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchBlogBySlug } from "../../../services/api";
 import SEO from "../../../components/Seo";
 import Head from "next/head";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import styles from "../../../styles/BlogDetails.module.css";
 
 const BlogDetails = () => {
@@ -119,13 +122,12 @@ const BlogDetails = () => {
             />
           </figure>
           <div className={styles.content}>
-            <div
-              dangerouslySetInnerHTML={{
-                __html:
-                  article.content ||
-                  "<p>No content available for this article.</p>",
-              }}
-            />
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+            >
+              {article.content || "No content available for this article."}
+            </ReactMarkdown>
           </div>
         </div>
       </section>

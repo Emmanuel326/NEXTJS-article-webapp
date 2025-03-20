@@ -1,3 +1,5 @@
+"use client";
+
 import "../styles/global.css";
 import NavBar from "../components/NavBar";
 import Footer from "../pages/Footer"; // Verify this path is correct
@@ -6,6 +8,7 @@ import RecommendedSidebar from "../components/RecommendedSidebar";
 import SEO from "../components/Seo";
 import Head from "next/head";
 import QueryProvider from "../context/QueryProvider";
+import { AuthProvider } from "../context/AuthContext"; // Named import
 import styles from "../styles/layout.module.css"; // Import your layout module
 
 function MyApp({ Component, pageProps }) {
@@ -23,47 +26,55 @@ function MyApp({ Component, pageProps }) {
     ]
   };
 
+  // If the component specifies no layout, just render it without public navigation.
+  if (Component.noLayout) {
+    return (
+      <QueryProvider>
+        <AuthProvider>
+          <Component {...pageProps} />
+        </AuthProvider>
+      </QueryProvider>
+    );
+  }
+
+  // Otherwise, render with full public layout.
   return (
     <QueryProvider>
-      <SEO
-        title="Finance Insights - Your Trusted Finance Hub"
-        description="Get the latest financial insights, investment strategies, and economic trends to make informed financial decisions."
-        url="https://fynanceguide.site"
-        keywords="finance, investing, cryptocurrency, stock market, economic analysis"
-        canonical="https://fynanceguide.site"
-      />
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <AuthProvider>
+        <SEO
+          title="Finance Insights - Your Trusted Finance Hub"
+          description="Get the latest financial insights, investment strategies, and economic trends to make informed financial decisions."
+          url="https://fynanceguide.site"
+          keywords="finance, investing, cryptocurrency, stock market, economic analysis"
+          canonical="https://fynanceguide.site"
         />
-      </Head>
+        <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
+        </Head>
 
-      {/* Sticky NavBar */}
-      <div className={styles.stickyNav}>
-        <NavBar />
-      </div>
-
-      {/* Layout Wrapper using layout.module.css */}
-      <div className={styles.layoutWrapper}>
-        {/* Top Stories rendered normally (non-sticky) */}
-        <div className={styles.topSection}>
-          <TopStories />
+        {/* Public Navigation and Layout */}
+        <div className={styles.stickyNav}>
+          <NavBar />
         </div>
-
-        {/* Content Area: Main Content & Sticky Sidebar */}
-        <div className={styles.contentArea}>
-          <div className={styles.mainContent}>
-            <Component {...pageProps} />
+        <div className={styles.layoutWrapper}>
+          <div className={styles.topSection}>
+            <TopStories />
           </div>
-          <div className={styles.stickySide}>
-            <RecommendedSidebar />
+          <div className={styles.contentArea}>
+            <div className={styles.mainContent}>
+              <Component {...pageProps} />
+            </div>
+            <div className={styles.stickySide}>
+              <RecommendedSidebar />
+            </div>
           </div>
         </div>
-      </div>
-
-      <Footer />
+        <Footer />
+      </AuthProvider>
     </QueryProvider>
   );
 }

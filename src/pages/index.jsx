@@ -1,14 +1,22 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect } from 'react';
 import Head from 'next/head';
 import SEO from "../components/Seo";
 import LatestBlogs from "../components/LatestBlogs";
 import styles from "../styles/home.module.css";
 
 const Home = () => {
+  console.log("Home component is rendering");
+
+  useEffect(() => {
+    console.log("Home component mounted");
+  }, []);
+
   return (
     <>
       <Head>
-        {/* Include your structured data and meta tags here */}
+        {/* Meta tags can go here */}
       </Head>
       <SEO 
         title="Welcome to Fynance Guide"
@@ -19,12 +27,10 @@ const Home = () => {
         canonical="https://www.fynanceguide.site"
       />
 
-      {/* Hero Section */}
       <section className={styles.hero}>
-        {/* Your hero content */}
+        {/* Hero content */}
       </section>
 
-      {/* Page-specific content */}
       <div className={styles.container}>
         <section className={styles.latestBlogsSection}>
           <LatestBlogs />
