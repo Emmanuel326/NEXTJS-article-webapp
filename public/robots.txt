@@ -1,9 +1,5 @@
-# *
 User-agent: *
 Allow: /
 
-# Host
 Host: https://fynanceguide.site
-
-# Sitemaps
-Sitemap: https://fynanceguide.site/sitemap.xml
+Sitemap: https://fynanceguide.site/api/sitemap.xml
