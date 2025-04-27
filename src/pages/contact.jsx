@@ -119,9 +119,9 @@ const Contact = () => {
 
         {/* Contact Details */}
         <div className={styles.contactDetails}>
-          <p>📍 Address: 123 Finance St, New York, NY</p>
-          <p>📞 Phone: +1 234 567 890</p>
-          <p>✉️ Email: contact@financeinsights.com</p>
+          <p>📍 Address: Baraka House, East Road, Box 16478-20100, Nairobi, Kenya​</p>
+          <p>📞 Phone: +254 704307624</p>
+          <p>✉️ Email: ubuntumail285@gmail.com</p>
         </div>
       </div>
     </section>
